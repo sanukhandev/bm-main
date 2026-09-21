@@ -1,6 +1,8 @@
 [submodule "backend"]
 	path = backend
 	url = https://github.com/sanukhandev/bm-main-be.git
+	branch = main
 [submodule "frontend"]
 	path = frontend
 	url = https://github.com/sanukhandev/bm-main-fe.git
+	branch = main
