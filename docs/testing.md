@@ -1,0 +1,184 @@
+# Testing Strategy
+
+## Testing Pyramid
+
+Use:
+
+- unit tests for calculations/domain rules;
+- feature/integration tests for APIs and database behavior;
+- frontend unit/component tests for UI logic;
+- end-to-end tests for critical workflows.
+
+---
+
+## Mandatory Backend Test Areas
+
+### Branch isolation
+
+For every major branch-scoped resource:
+
+```text
+same branch → permitted when role allows
+different branch → denied/not found
+super admin → permitted when intended
+```
+
+Test read and write operations.
+
+### Customers
+
+- individual creation;
+- organization creation;
+- owner role;
+- tenant role;
+- both roles.
+
+### Properties
+
+- create each property type;
+- add valid component type;
+- reject cross-branch owner;
+- archive with history preserved.
+
+### Owner agreements
+
+- create;
+- activate;
+- installment schedule;
+- invalid date range;
+- wrong-owner property;
+- termination/expiry.
+
+### Tenant agreements
+
+- create;
+- activate;
+- reject unavailable asset;
+- overlap boundaries;
+- cross-branch asset;
+- agreement expiry/termination.
+
+### Payments
+
+- cash;
+- cheque;
+- bank transfer;
+- partial payment;
+- duplicate prevention;
+- receipt generation;
+- void/reversal.
+
+### Inventory
+
+- purchase receipt increases stock;
+- work-order use decreases stock;
+- return increases stock;
+- scrap decreases stock;
+- cannot over-return;
+- insufficient stock behavior.
+
+### Work orders
+
+- property-level;
+- component-level;
+- service charge;
+- item consumption;
+- completion.
+
+### Invoice
+
+- create header;
+- line totals;
+- branch scope;
+- no mandatory links to operational domains.
+
+---
+
+## Frontend Test Areas
+
+- branch selector behavior;
+- branch cache invalidation;
+- route guard UX;
+- property-type dynamic forms;
+- agreement installment validation;
+- unavailable asset messaging;
+- financial double-submit prevention;
+- inventory movement views;
+- API error rendering.
+
+---
+
+## End-to-End Critical Paths
+
+### Owner onboarding
+
+```text
+Create owner
+→ Create property
+→ Add rentable components
+→ Create owner agreement
+→ Activate agreement
+```
+
+### Tenant leasing
+
+```text
+Create tenant
+→ Find available asset
+→ Create tenant agreement
+→ Generate payment schedule
+→ Activate agreement
+→ Record payment
+→ Generate cash receipt
+```
+
+### Owner payout
+
+```text
+Find due owner installment
+→ Record outward payment
+→ Generate purchase receipt
+```
+
+### Maintenance
+
+```text
+Create work order
+→ Add service charge
+→ Consume inventory
+→ Return unused inventory
+→ Complete work order
+```
+
+### Procurement
+
+```text
+Create vendor
+→ Create purchase order
+→ Approve
+→ Receive items
+→ Verify stock movement
+```
+
+---
+
+## Test Data
+
+Factories should create branch-aware data explicitly.
+
+Avoid factories that silently attach every record to one default branch, as this hides isolation defects.
+
+---
+
+## Regression Rule
+
+Any production bug involving:
+
+- unauthorized access;
+- wrong branch data;
+- payment totals;
+- duplicate receipts;
+- availability;
+- inventory balance
+
+must receive a regression test.
