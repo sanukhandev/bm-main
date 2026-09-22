@@ -198,3 +198,25 @@ Document:
 - enums;
 - error codes;
 - examples.
+
+## Current API foundation
+
+The backend uses Laravel Sanctum's stateful SPA authentication with the existing
+session guard. The Angular client first requests `/sanctum/csrf-cookie`, then
+logs in through `POST /api/v1/auth/login` with cookies and CSRF enabled. It must
+send `X-Branch-Id` on branch-scoped requests; the server verifies that claim
+against the authenticated user's active membership or global `super_admin`
+role. Super admins still operate inside the explicitly selected branch.
+
+Successful resources use Laravel JSON Resource responses. API failures use:
+
+```json
+{
+  "message": "Resource not found.",
+  "code": "RESOURCE_NOT_FOUND",
+  "request_id": "..."
+}
+```
+
+Validation failures additionally include an `errors` object. API requests carry
+an `X-Request-Id` response header and the same ID in error bodies.
