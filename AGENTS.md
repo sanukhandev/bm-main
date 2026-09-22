@@ -406,6 +406,10 @@ Super-admin cross-branch endpoints must be explicit.
 
 See [API Conventions](docs/backend/api-conventions.md).
 
+The frontend-facing request, response, error, and security schemas are
+maintained in [API Schema Library](docs/api-schema-library.md). Any new or
+changed API contract must update that document in the same change.
+
 ---
 
 ## Data Integrity Invariants
@@ -599,6 +603,7 @@ Before completing:
 - [Maintenance & Inventory](docs/domain/maintenance-inventory.md)
 - [Backend Guidelines](docs/backend/backend-guidelines.md)
 - [API Conventions](docs/backend/api-conventions.md)
+- [API Schema Library](docs/api-schema-library.md)
 - [Database Guidelines](docs/backend/database-guidelines.md)
 - [Frontend Guidelines](docs/frontend/frontend-guidelines.md)
 - [AI Guidelines](docs/ai/ai-guidelines.md)
