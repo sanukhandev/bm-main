@@ -231,6 +231,35 @@ Response:
 }
 ```
 
+### `GET /api/v1/dashboard/metrics`
+
+Authentication, active account, and `X-Branch-Id` are required. Metrics are
+calculated from the verified branch only; agreement totals include `approved`
+and `commenced` agreements.
+
+Response:
+
+```json
+{
+  "data": {
+    "total_owners": 1,
+    "total_tenants": 1,
+    "total_properties": 2,
+    "total_owner_agreements": 1,
+    "total_tenant_agreements": 1
+  }
+}
+```
+
+### Administration read endpoints
+
+`GET /api/v1/admin/users` and `GET /api/v1/admin/roles` require an active
+authenticated super admin. Users are returned as a paginated collection with
+their active branch memberships and global/branch role keys. Roles are returned
+as a `data` collection with `id`, `name`, `label`, `description`, and
+`permissions` fields. These endpoints do not accept a branch context because
+they are global administration views.
+
 ### `GET /api/v1/customers`
 
 Authentication, active account, and `X-Branch-Id` are required.
@@ -273,12 +302,14 @@ Request:
   "state_or_emirate": "Dubai",
   "country_code": "AE",
   "notes": null,
-  "metadata_json": null
+  "metadata_json": null,
+  "roles": ["owner", "tenant"]
 }
 ```
 
-`branch_id`, `status`, roles, audit actors, and calculated values are
-server-controlled and must not be submitted as authorization instructions.
+`branch_id`, `status`, audit actors, and calculated values are server-controlled
+and must not be submitted as authorization instructions. `roles` may contain
+`owner`, `tenant`, or both and creates branch-scoped customer role assignments.
 
 Success: `201` with a `Customer` resource.
 
