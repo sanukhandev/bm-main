@@ -327,6 +327,196 @@ editable through this endpoint.
 
 Success: `200` with a `Customer` resource.
 
+### `DELETE /api/v1/customers/{customer}`
+
+Authentication, active account, branch context, authorization, and CSRF are
+required. This is a safe delete: the row remains and its status becomes
+`archived`. The endpoint never physically deletes a customer.
+
+Success: `204 No Content`.
+
+### Property resources
+
+The same CRUD pattern is available under `/api/v1/properties`:
+
+```text
+GET    /api/v1/properties
+POST   /api/v1/properties
+GET    /api/v1/properties/{property}
+PATCH  /api/v1/properties/{property}
+DELETE /api/v1/properties/{property}
+```
+
+All routes require authentication, an active account, and `X-Branch-Id`.
+
+Property create request:
+
+```json
+{
+  "owner_customer_id": 10,
+  "property_code": "FLAT-101",
+  "unit_number": "101",
+  "property_type": "apartment",
+  "name": "Flat 101",
+  "building_name": "Building A",
+  "address_line_1": "Main Street",
+  "city": "Dubai",
+  "state_or_emirate": "Dubai",
+  "country_code": "AE",
+  "area": "85.5000",
+  "notes": null,
+  "metadata_json": {}
+}
+```
+
+`owner_customer_id` must identify an active owner customer in the selected
+branch. The server sets `branch_id` and `status=active`. Property ownership is
+immutable through ordinary PATCH once the property exists; use a dedicated
+future ownership workflow if the business permits ownership changes.
+
+Property response:
+
+```json
+{
+  "data": {
+    "id": 20,
+    "branch_id": 1,
+    "owner_customer_id": 10,
+    "owner": { "data": { "id": 10, "display_name": "Owner" } },
+    "property_code": "FLAT-101",
+    "unit_number": "101",
+    "property_type": "apartment",
+    "name": "Flat 101",
+    "building_name": "Building A",
+    "address_line_1": "Main Street",
+    "address_line_2": null,
+    "city": "Dubai",
+    "state_or_emirate": "Dubai",
+    "country_code": "AE",
+    "area": "85.5000",
+    "status": "active",
+    "notes": null,
+    "metadata_json": {},
+    "created_at": "2026-09-22T08:00:00+00:00",
+    "updated_at": "2026-09-22T08:00:00+00:00"
+  }
+}
+```
+
+Property list filters are `search`, `status`, `property_type`,
+`owner_customer_id`, `page`, `per_page`, and whitelisted `sort` values.
+
+`DELETE /api/v1/properties/{property}` is a safe delete. It sets
+`status=archived` and returns `204`; it never removes the property row or its
+historical relationships.
+
+### Owner Agreement resources
+
+```text
+GET    /api/v1/owner-agreements
+POST   /api/v1/owner-agreements
+GET    /api/v1/owner-agreements/{owner_agreement}
+PATCH  /api/v1/owner-agreements/{owner_agreement}
+DELETE /api/v1/owner-agreements/{owner_agreement}
+```
+
+Create request:
+
+```json
+{
+  "agreement_no": "OA-2026-001",
+  "owner_customer_id": 10,
+  "property_ids": [20, 21],
+  "start_date": "2026-01-01",
+  "end_date": "2026-12-31",
+  "total_amount": "12000.00",
+  "currency_code": "AED",
+  "payment_count": 12,
+  "payment_frequency": "monthly",
+  "payment_mode": "bank_transfer",
+  "terms_text": null,
+  "notes": null
+}
+```
+
+The owner must have the `owner` business role in the selected branch. Each
+property must belong to that same owner and branch. New agreements always start
+as `draft`; `branch_id`, status, audit actors, timestamps, and lock version are
+server-controlled.
+
+Owner Agreement response fields:
+
+```text
+id, branch_id, agreement_no, owner_customer_id, owner, properties,
+start_date, end_date, total_amount, currency_code, payment_count,
+payment_frequency, payment_mode, terms_text, notes, status, lock_version,
+terminated_at, termination_reason, created_at, updated_at
+```
+
+Agreement PATCH is allowed only while the status is `draft` or
+`pending_approval`. `approved`, `commenced`, `expired`, and `terminated`
+records require dedicated lifecycle actions, not ordinary CRUD updates.
+
+Agreement list filters are `search`, `status`, `party_customer_id`, `page`,
+`per_page`, and whitelisted `sort` values.
+
+`DELETE /api/v1/owner-agreements/{owner_agreement}` is a safe termination, not
+a physical delete. Optional request body:
+
+```json
+{ "reason": "Owner record closed" }
+```
+
+The agreement becomes `terminated`, termination actor/time/reason are recorded,
+status history is appended, and the updated resource is returned with `200`.
+
+### Tenant Agreement resources
+
+```text
+GET    /api/v1/tenant-agreements
+POST   /api/v1/tenant-agreements
+GET    /api/v1/tenant-agreements/{tenant_agreement}
+PATCH  /api/v1/tenant-agreements/{tenant_agreement}
+DELETE /api/v1/tenant-agreements/{tenant_agreement}
+```
+
+Create request:
+
+```json
+{
+  "agreement_no": "TA-2026-001",
+  "tenant_customer_id": 30,
+  "properties": [
+    {
+      "property_id": 20,
+      "source_owner_agreement_id": 5
+    }
+  ],
+  "start_date": "2026-01-01",
+  "end_date": "2026-12-31",
+  "total_amount": "24000.00",
+  "currency_code": "AED",
+  "payment_count": 12,
+  "payment_frequency": "monthly",
+  "payment_mode": "cash",
+  "terms_text": null,
+  "notes": null
+}
+```
+
+The tenant must have the `tenant` business role in the selected branch. Every
+property must be covered by the referenced Owner Agreement in the same branch;
+the source agreement/property relationship is enforced by database foreign
+keys. New agreements start as `draft`.
+
+Tenant Agreement response fields match Owner Agreements except that the party
+fields are `tenant_customer_id` and `tenant`; each property retains its source
+owner-agreement relationship in the database.
+
+Tenant PATCH is allowed only for `draft` and `pending_approval` agreements.
+DELETE safely terminates the agreement, appends status history, and returns
+the updated resource with `200`; it never hard-deletes contractual history.
+
 ## Roles and branch security
 
 Current application roles:
