@@ -330,8 +330,9 @@ Success: `200` with a `Customer` resource.
 ### `DELETE /api/v1/customers/{customer}`
 
 Authentication, active account, branch context, authorization, and CSRF are
-required. This is a safe delete: the row remains and its status becomes
-`archived`. The endpoint never physically deletes a customer.
+required. This is a safe delete: the row remains, `deleted_at` is populated,
+and its status becomes `archived`. Normal queries hide the soft-deleted row.
+The endpoint never physically deletes a customer.
 
 Success: `204 No Content`.
 
@@ -406,9 +407,9 @@ Property response:
 Property list filters are `search`, `status`, `property_type`,
 `owner_customer_id`, `page`, `per_page`, and whitelisted `sort` values.
 
-`DELETE /api/v1/properties/{property}` is a safe delete. It sets
-`status=archived` and returns `204`; it never removes the property row or its
-historical relationships.
+`DELETE /api/v1/properties/{property}` is a safe soft delete. It sets
+`status=archived`, populates `deleted_at`, and returns `204`; it never removes
+the property row or its historical relationships.
 
 ### Owner Agreement resources
 
@@ -467,8 +468,9 @@ a physical delete. Optional request body:
 { "reason": "Owner record closed" }
 ```
 
-The agreement becomes `terminated`, termination actor/time/reason are recorded,
-status history is appended, and the updated resource is returned with `200`.
+The agreement becomes `terminated`, `deleted_at` is populated, termination
+actor/time/reason are recorded, status history is appended, and the updated
+resource is returned with `200`.
 
 ### Tenant Agreement resources
 
@@ -514,8 +516,9 @@ fields are `tenant_customer_id` and `tenant`; each property retains its source
 owner-agreement relationship in the database.
 
 Tenant PATCH is allowed only for `draft` and `pending_approval` agreements.
-DELETE safely terminates the agreement, appends status history, and returns
-the updated resource with `200`; it never hard-deletes contractual history.
+DELETE safely terminates and soft-deletes the agreement, appends status history,
+and returns the updated resource with `200`; it never hard-deletes contractual
+history.
 
 ## Roles and branch security
 
