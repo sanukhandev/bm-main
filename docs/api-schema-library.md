@@ -105,6 +105,27 @@ Laravel pagination fields are preserved:
 The frontend must use `data`, `links`, and `meta`; it must not expect a custom
 `success` wrapper.
 
+## Billing documents
+
+Billing is branch scoped and uses backend-generated document numbers. Quotation
+numbers use `BRANCH-QT-YEAR-000001`; invoice numbers use
+`BRANCH-INV-YEAR-000001`.
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| GET/POST | `/api/v1/quotations` | List/create quotations |
+| GET/PATCH/DELETE | `/api/v1/quotations/{quotation}` | Read/update/void quotation |
+| POST | `/api/v1/quotations/{quotation}/convert-to-invoice` | Convert quotation to invoice |
+| POST | `/api/v1/quotations/{quotation}/payments` | Add quotation payment line |
+| PATCH | `/api/v1/quotations/{quotation}/payments/{payment}/status` | Post/default quotation payment |
+| GET/POST | `/api/v1/invoices` | List/create invoices |
+| GET/PATCH/DELETE | `/api/v1/invoices/{invoice}` | Read/update/void invoice |
+| POST | `/api/v1/invoices/{invoice}/payments` | Add invoice payment line |
+| PATCH | `/api/v1/invoices/{invoice}/payments/{payment}/status` | Post/default invoice payment |
+
+Payment lines remain pending until explicitly marked paid. Paid lines create a
+branch-scoped inward or outward AccountTransaction and receipt/voucher number.
+
 ## Error model
 
 All `/api/*` errors use this shape:
