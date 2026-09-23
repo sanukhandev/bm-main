@@ -196,7 +196,10 @@ Dashboard tests must verify branch-scoped summary counts, current-day
 occupancy, 30-day expiry filtering, open work orders, and financial attention
 permission masking. Future, expired, cancelled, and terminated tenant
 agreements must not be treated as current occupancy. Frontend tests should
-cover loading, error, empty, restricted-financial, and branch-refresh states.
+cover loading, error, empty, restricted-financial, branch-refresh states,
+KPI rendering, actionable-list navigation, and retry behavior. Explicit
+All-Branches aggregation remains deferred; selected-branch behavior is the
+Phase 1 contract.
 
 ## Regression Rule
 
