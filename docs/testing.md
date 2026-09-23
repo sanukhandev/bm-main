@@ -9,9 +9,10 @@ summary totals are independent of pagination, date ranges reject inverted
 values, voided financial records do not inflate balances, and Branch A never
 receives Branch B rows or aggregate values. Financial report endpoints require
 `accounts.view`; agreement reports may return contract data while masking
-financial columns for users without that permission. Angular report tests
-cover typed filter requests, loading/empty/error states, summaries, pagination,
-and report navigation.
+financial columns for users without that permission. The current Angular
+regression coverage verifies typed report filter requests. Component-level
+report state/navigation specs remain a follow-up because the repository test
+runner currently fails compiling unrelated dirty dashboard specifications.
 
 ## Testing Pyramid
 
