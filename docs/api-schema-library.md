@@ -728,3 +728,12 @@ Financial controls use the following API vocabulary:
   `/accounts/transactions/{transaction}/cheque/{deposit|clear|bounce|cancel}`.
 - Cheque actions update settlement metadata only; they do not create another
   account transaction or change the original document number.
+
+## Audit logs
+
+`GET /api/v1/audit-logs` requires `audit.view`, uses the active authorized
+branch, and returns a paginated `data`/`meta` envelope. Supported filters are
+`date_from`, `date_to`, `actor_user_id`, `action`, `entity_type`, `entity_id`,
+`search`, `page`, and bounded `per_page`. Results are newest first and expose
+safe actor/branch details plus compact `before`, `after`, and `metadata`
+objects. There are no public audit create, update, or delete endpoints.

@@ -235,3 +235,10 @@ guards. Cheque state transitions remain backend-authoritative and the UI
 refreshes after successful actions. True parallel database race testing remains
 a future test-infrastructure enhancement; production posting continues to use
 database row locking and balance re-checks.
+
+### Audit trail coverage
+
+Audit tests cover actor/branch capture, sensitive-field filtering, paginated
+branch-scoped access, financial posting integration, and append-only model
+behavior. The frontend covers the typed audit API request; the viewer provides
+permission-gated filtering, pagination, and before/after detail display.

@@ -317,3 +317,14 @@ Potential examples:
 - document signing.
 
 Do not put provider-specific behavior throughout domain logic.
+
+## Central audit trail
+
+Meaningful successful mutations write an append-only `audit_logs` record through
+the backend `AuditService`. Records carry the actor, active/entity branch,
+stable entity alias, action, compact before/after snapshots, safe metadata, and
+request metadata. Domain histories such as agreement status history remain
+authoritative for their own timelines; the central trail provides the
+cross-domain actor/action view. Audit viewing is branch-scoped through
+`GET /api/v1/audit-logs` and requires `audit.view`. There is no all-branches
+audit mode in Phase 1.

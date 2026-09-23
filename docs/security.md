@@ -171,3 +171,9 @@ Mandatory cases include:
 - private attachments obey branch rules.
 Financial authorization is separated into `accounts.view`, `accounts.post`,
 and `accounts.void`. Permission never bypasses branch isolation.
+
+Audit viewing is separately protected by `audit.view`. Audit records are
+append-only, branch-scoped, and exclude passwords, tokens, secrets, and raw
+authorization material. Critical mutation audit inserts occur in the same
+database transaction as the business change where practical; scheduled system
+actions use a null actor with `metadata.actor_type = system`.
