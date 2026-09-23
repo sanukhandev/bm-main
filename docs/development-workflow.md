@@ -127,3 +127,10 @@ Reviewers should ask:
 6. Is the state transition legal?
 7. Are calculations server-authoritative?
 8. Are tests present for failure paths?
+## Phase 1 release verification
+
+Before a release candidate is promoted, run the backend feature suite, Pint,
+Composer audit, frontend test suite, production build, and NPM audit. Then run
+the [Phase 1 release smoke checklist](release-checklist.md) against the deployed
+configuration. Do not treat frontend visibility as authorization; verify branch
+scope and permissions through the API as well.

@@ -249,3 +249,6 @@ Security regression tests cover client-forced branch/status fields,
 cross-branch foreign keys, agreement lifecycle bypass attempts, and
 server-owned financial direction/document numbers. Existing domain suites cover
 the broader branch, IDOR, payment, report, dashboard, and audit boundaries.
+
+The manual Phase 1 deployment smoke flow is maintained in
+[`docs/release-checklist.md`](release-checklist.md).
