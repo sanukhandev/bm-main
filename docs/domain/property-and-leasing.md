@@ -80,24 +80,28 @@ tenant_end_date <= owner_end_date
 
 ## Agreement Lifecycle
 
-Suggested owner and tenant agreement statuses:
+Owner and Tenant Agreements use the same backend-authoritative statuses:
 
 ```text
 draft
-active
+pending_approval
+approved
+commenced
+on_hold
 expired
 terminated
 cancelled
 ```
 
-Possible transition model:
+The normal transition model is:
 
 ```text
-draft → active
+draft → pending_approval → approved → commenced
 draft → cancelled
-active → expired
-active → terminated
-active → cancelled    # only if business rules allow
+pending_approval → draft | cancelled
+approved → cancelled       # only before commencement
+commenced → on_hold | expired | terminated
+on_hold → commenced | expired | terminated
 ```
 
 Activation should validate:
@@ -109,6 +113,16 @@ Activation should validate:
 - tenant asset is available;
 - payment schedule reconciles;
 - mandatory fields are complete.
+
+Approved and later agreements are not ordinarily editable. Submit, approve,
+commence, hold, resume, expire, terminate, cancel, extend, and renew are
+explicit lifecycle operations. Extension records the old and new end dates;
+renewal creates a new draft agreement with a new backend-generated number and
+does not copy payments or receipt history.
+
+The `agreements:process-lifecycle` command runs daily using each branch's
+timezone. It commences approved agreements whose start date has arrived and
+expires commenced/on-hold agreements after their end date. It is idempotent.
 
 ---
 

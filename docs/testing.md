@@ -65,6 +65,14 @@ agreement date coverage, update self-exclusion, and the branch-scoped
 `/api/v1/properties/available` query. Final create/update tests must exercise
 the backend recheck under the Property-row locking transaction.
 
+### Agreement lifecycle
+
+Owner and Tenant Agreement tests must cover the shared transition matrix,
+locked commercial editing after approval, explicit lifecycle actions,
+commencement/expiry processing, hold/resume, cancellation versus termination,
+extension, renewal independence, branch isolation, and preservation of payment
+history. The scheduled lifecycle processor must be safe to run repeatedly.
+
 ### Payments
 
 - cash;

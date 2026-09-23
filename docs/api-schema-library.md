@@ -583,9 +583,29 @@ fields are `tenant_customer_id` and `tenant`; each property retains its source
 owner-agreement relationship in the database.
 
 Tenant PATCH is allowed only for `draft` and `pending_approval` agreements.
-DELETE safely terminates and soft-deletes the agreement, appends status history,
-and returns the updated resource with `200`; it never hard-deletes contractual
-history.
+Lifecycle actions are explicit and preserve the agreement record and history;
+the legacy DELETE endpoint maps draft/pending/approved agreements to
+cancellation and commenced/on-hold agreements to termination.
+
+Agreement lifecycle actions use explicit POST endpoints:
+
+```text
+POST /api/v1/{owner|tenant}-agreements/{agreement}/submit
+POST /api/v1/{owner|tenant}-agreements/{agreement}/approve
+POST /api/v1/{owner|tenant}-agreements/{agreement}/commence
+POST /api/v1/{owner|tenant}-agreements/{agreement}/hold
+POST /api/v1/{owner|tenant}-agreements/{agreement}/resume
+POST /api/v1/{owner|tenant}-agreements/{agreement}/expire
+POST /api/v1/{owner|tenant}-agreements/{agreement}/terminate
+POST /api/v1/{owner|tenant}-agreements/{agreement}/cancel
+POST /api/v1/{owner|tenant}-agreements/{agreement}/extend
+POST /api/v1/{owner|tenant}-agreements/{agreement}/renew
+```
+
+Normal create/update payloads cannot set agreement status. `extend` requires
+`new_end_date` and `reason`; `renew` requires `start_date` and `end_date`.
+Agreement resources expose `available_actions` for UI guidance, while the
+backend remains authoritative for authorization and transition validity.
 
 ## Roles and branch security
 
