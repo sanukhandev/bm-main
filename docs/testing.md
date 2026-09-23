@@ -202,3 +202,11 @@ Any production bug involving:
 - inventory balance
 
 must receive a regression test.
+### Financial frontend regression coverage
+
+Accounts UI tests cover permission-aware actions, cheque state/action
+visibility, payment-mode metadata cleanup, and in-flight duplicate submission
+guards. Cheque state transitions remain backend-authoritative and the UI
+refreshes after successful actions. True parallel database race testing remains
+a future test-infrastructure enhancement; production posting continues to use
+database row locking and balance re-checks.
