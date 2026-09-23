@@ -242,3 +242,10 @@ Audit tests cover actor/branch capture, sensitive-field filtering, paginated
 branch-scoped access, financial posting integration, and append-only model
 behavior. The frontend covers the typed audit API request; the viewer provides
 permission-gated filtering, pagination, and before/after detail display.
+
+### Security hardening coverage
+
+Security regression tests cover client-forced branch/status fields,
+cross-branch foreign keys, agreement lifecycle bypass attempts, and
+server-owned financial direction/document numbers. Existing domain suites cover
+the broader branch, IDOR, payment, report, dashboard, and audit boundaries.

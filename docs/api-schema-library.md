@@ -737,3 +737,9 @@ branch, and returns a paginated `data`/`meta` envelope. Supported filters are
 `search`, `page`, and bounded `per_page`. Results are newest first and expose
 safe actor/branch details plus compact `before`, `after`, and `metadata`
 objects. There are no public audit create, update, or delete endpoints.
+
+All branch-scoped API requests require an authenticated active branch context.
+Business records derive `branch_id` from that context; client-supplied branch
+ownership, lifecycle status, financial direction, totals, posted metadata, and
+document numbers are ignored or rejected. Cross-branch resources resolve as
+not found according to the existing API error convention.

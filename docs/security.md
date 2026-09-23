@@ -177,3 +177,18 @@ append-only, branch-scoped, and exclude passwords, tokens, secrets, and raw
 authorization material. Critical mutation audit inserts occur in the same
 database transaction as the business change where practical; scheduled system
 actions use a null actor with `metadata.actor_type = system`.
+
+## Phase 1 security rules
+
+Branch ownership is resolved from authenticated branch context; client-supplied
+`branch_id` values are not trusted. Foreign keys are validated against that
+branch, lifecycle/status changes use action endpoints, and posted financial
+amounts, directions, allocations, numbers, and audit records are
+server-authoritative. Angular visibility is UX only; backend middleware and
+policies remain the security boundary.
+
+Production deployments must set `APP_DEBUG=false`, use HTTPS with secure,
+HttpOnly cookies, an appropriate SameSite policy, explicit frontend origins in
+CORS, and trusted-proxy configuration matching the deployment edge. All-branch
+access remains an explicit future capability and is never inferred from a
+missing branch context.
