@@ -216,3 +216,14 @@ Voiding is an explicit `POST /api/v1/accounts/transactions/{id}/void` action
 requiring a reason. It preserves the original document number and source
 record, reverses installment allocations atomically, and excludes the voided
 entry from petty-cash balances. Posted and voided records are immutable.
+## Phase 1 financial controls
+
+Operational account transactions are the source of truth. `accounts.view`,
+`accounts.post`, and `accounts.void` are independent permissions and remain
+subject to branch context. Posted transactions are immutable; corrections use
+the dedicated void flow.
+
+Cheque transactions use `received`, `deposited`, `cleared`, `bounced`, and
+`cancelled`. Only received to deposited/cancelled and deposited to
+cleared/bounced/cancelled are allowed. Cheque status changes do not create new
+financial postings. Pending cheques are received plus deposited.

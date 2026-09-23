@@ -221,3 +221,6 @@ Successful resources use Laravel JSON Resource responses. API failures use:
 
 Validation failures additionally include an `errors` object. API requests carry
 an `X-Request-Id` response header and the same ID in error bodies.
+Financial routes require `accounts.view` for reads, `accounts.post` for new
+postings and cheque transitions, and `accounts.void` for voiding posted
+transactions, in addition to authenticated branch context.

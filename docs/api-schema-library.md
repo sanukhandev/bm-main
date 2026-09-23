@@ -681,3 +681,12 @@ This file belongs to the parent repository so frontend work can consume one
 versioned contract independent of backend implementation details. Backend API
 changes must update this file in the same change. Breaking changes require
 explicit approval and a versioning decision.
+Financial controls use the following API vocabulary:
+
+- Permissions: `accounts.view`, `accounts.post`, `accounts.void`.
+- Payment modes: `cash`, `cheque`, `bank_transfer`.
+- Cheque statuses: `received`, `deposited`, `cleared`, `bounced`, `cancelled`.
+- Cheque actions are explicit `POST` operations under
+  `/accounts/transactions/{transaction}/cheque/{deposit|clear|bounce|cancel}`.
+- Cheque actions update settlement metadata only; they do not create another
+  account transaction or change the original document number.

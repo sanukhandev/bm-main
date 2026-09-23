@@ -169,3 +169,5 @@ Mandatory cases include:
 - normal user cannot enter all-branch mode;
 - super admin branch switching works as designed;
 - private attachments obey branch rules.
+Financial authorization is separated into `accounts.view`, `accounts.post`,
+and `accounts.void`. Permission never bypasses branch isolation.
