@@ -85,9 +85,8 @@ Use foreign keys for core referential integrity where compatible with deployment
 Important relationships include:
 
 - property → owner customer;
-- component → property;
 - agreement → customer;
-- agreement asset → property/component;
+- agreement property → property;
 - payment → agreement/installment;
 - receipt → payment;
 - work-order item → inventory item;

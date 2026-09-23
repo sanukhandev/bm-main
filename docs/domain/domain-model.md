@@ -9,7 +9,6 @@ Branch
 │   ├── Owner role
 │   └── Tenant role
 ├── Properties
-│   └── Rentable Components
 ├── Owner Agreements
 ├── Tenant Agreements
 ├── Payments
@@ -91,46 +90,27 @@ land
 
 ---
 
-## Rentable Component
+## Property as the Leasable Entity
 
-Use a generic rentable component abstraction when practical.
+Each Property record is the independently managed and leasable real-estate
+asset. Property type describes the record; it does not create a child asset
+hierarchy.
 
-Examples:
-
-```text
-Apartment → Unit
-Villa → Room
-Shop → Area
-Office → Area
-Labor Camp → Bed
-```
-
-Suggested attributes:
+Supported `property_type` values are:
 
 ```text
-id
-branch_id
-property_id
-component_type
-component_code
-name
-classification
-area
-capacity
-status
-metadata_json
+apartment
+villa
+shop
+office
+space
+labor_camp
+warehouse
+land
 ```
 
-Possible `component_type` values:
-
-```text
-unit
-room
-area
-bed
-```
-
-For single-scope property types such as land, warehouse, or space, the property itself may be rentable or may own one area component. Choose one consistent model.
+`unit_number` and `area` are scalar Property attributes. They do not refer
+to separate records.
 
 ---
 
@@ -280,7 +260,6 @@ Core fields:
 id
 branch_id
 property_id
-rentable_component_id nullable
 work_order_no
 description
 status

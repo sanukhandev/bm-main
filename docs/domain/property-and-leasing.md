@@ -2,30 +2,26 @@
 
 ## Property Types
 
-Supported initial types:
-
-| Type | Rentable Child |
-|---|---|
-| Apartment | Unit |
-| Villa | Room |
-| Shop | Area |
-| Office | Area |
-| Space | Area or property-level scope |
-| Labor Camp | Bed |
-| Warehouse | Area or property-level scope |
-| Land | Area or property-level scope |
-
-Apartment unit classifications initially include:
+Supported property types:
 
 ```text
-studio
-1_bhk
-2_bhk
-3_bhk
-4_bhk
+apartment
+villa
+shop
+office
+space
+labor_camp
+warehouse
+land
 ```
 
-These should be configurable/extensible where practical.
+Each row in `properties` is an independently managed and leasable
+real-estate asset. `unit_number` may identify the physical property or
+property number, and `area` is a scalar Property attribute. Neither field
+creates a child entity.
+
+These eight values are the authoritative PropertyType values for the current
+application contract.
 
 ---
 
@@ -43,7 +39,9 @@ If multi-owner ownership is required in the future, evolve to an ownership pivot
 
 Availability is date-sensitive.
 
-A property/component is not available for a tenant agreement when there is an overlapping active/reserved tenant agreement for the same rentable scope, unless overlap is explicitly permitted.
+A Property is not available for a tenant agreement when there is an
+overlapping active/reserved tenant agreement for that Property, unless
+overlap is explicitly permitted.
 
 Recommended overlap rule for inclusive dates:
 
@@ -59,11 +57,7 @@ If checkout/end dates are treated as exclusive, use the corresponding exclusive 
 
 ## Agreement Coverage
 
-Owner agreement coverage may be:
-
-- entire property;
-- selected units/components;
-- an explicitly modeled scope.
+Owner agreement coverage is stored against one or more Property records.
 
 Tenant agreements must not lease an asset outside Baithul Madeena's valid owner-agreement coverage for the relevant period, if owner-agreement coverage is the source of leasing authority.
 
@@ -140,35 +134,17 @@ The sum of installment amounts must equal the agreement's scheduled payable amou
 
 ---
 
-## Lease Asset Abstraction
+## Lease Property Reference
 
-Preferred API behavior is to expose a normalized asset reference.
-
-Example conceptual payload:
-
-```json
-{
-  "asset_type": "rentable_component",
-  "asset_id": 123
-}
-```
-
-or:
-
-```json
-{
-  "property_id": 10,
-  "rentable_component_id": 123
-}
-```
-
-Do not expose separate incompatible agreement APIs for every property subtype unless necessary.
+Agreement property references use `property_id` through the
+`owner_agreement_properties` and `tenant_agreement_properties` relationships.
+Multiple Properties per agreement remain supported.
 
 ---
 
 ## Deactivation and Deletion
 
-Do not hard-delete property/components referenced by:
+Do not hard-delete Properties referenced by:
 
 - agreements;
 - payments;

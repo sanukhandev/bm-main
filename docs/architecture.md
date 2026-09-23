@@ -277,7 +277,7 @@ Common optimization targets:
 
 - dashboard counts;
 - agreement lists;
-- property/component availability;
+- property availability;
 - payment schedules;
 - inventory balances;
 - work-order history.

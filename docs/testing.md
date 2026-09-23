@@ -36,7 +36,8 @@ Test read and write operations.
 ### Properties
 
 - create each property type;
-- add valid component type;
+- accept all supported PropertyType values;
+- reject unsupported property types;
 - reject cross-branch owner;
 - archive with history preserved.
 
@@ -80,7 +81,7 @@ Test read and write operations.
 ### Work orders
 
 - property-level;
-- component-level;
+- direct Property relationship;
 - service charge;
 - item consumption;
 - completion.
@@ -115,7 +116,6 @@ Test read and write operations.
 ```text
 Create owner
 → Create property
-→ Add rentable components
 → Create owner agreement
 → Activate agreement
 ```

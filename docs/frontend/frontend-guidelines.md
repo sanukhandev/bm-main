@@ -135,15 +135,22 @@ Do not add client-side totals from incomplete paginated datasets.
 
 ## Property UI
 
-The property form should adapt by property type.
+The property form captures the Property directly. Property type changes the
+description and display of the Property, but does not create child records.
 
-Examples:
+Relevant fields include:
 
 ```text
-Apartment → manage units
-Villa → manage rooms
-Labor Camp → manage beds
-Shop/Office → manage areas
+owner
+property code
+unit/property number
+property type
+name
+building name
+address
+area
+status
+notes
 ```
 
 Keep shared field logic reusable.

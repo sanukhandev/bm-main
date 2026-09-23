@@ -19,7 +19,7 @@ Any coding agent working in this repository must preserve:
 1. strict branch-level data isolation,
 2. super-admin cross-branch access,
 3. accounting and receipt traceability,
-4. property/unit occupancy integrity,
+4. property occupancy integrity,
 5. inventory stock integrity,
 6. agreement/payment consistency,
 7. auditability of sensitive actions,
@@ -36,11 +36,11 @@ The high-level business flow is:
 ```text
 Owner
   ↓
-Owner Property / Property Units
+Property
   ↓
 Owner Agreement with Baithul Madeena
   ↓
-Property / Unit made available for leasing
+Property made available for leasing
   ↓
 Tenant Agreement
   ↓
@@ -92,7 +92,7 @@ The primary domains are:
 - Owners
 - Tenants
 - Properties
-- Property components / rentable assets
+- Properties (each independently leasable)
 - Owner agreements
 - Tenant agreements
 - Payments
@@ -140,20 +140,24 @@ Do not duplicate the same person or organization into unrelated owner and tenant
 
 ## Property Model
 
-Supported property types and rentable structures:
+Supported property types. Each property type is stored directly as a
+Property record; no child property hierarchy is required:
 
-| Property Type | Child / Rentable Structure |
-|---|---|
-| Apartment | Units |
-| Villa | Rooms |
-| Shop | Areas |
-| Office | Areas |
-| Space | Area |
-| Labor Camp | Beds |
-| Warehouse | Area |
-| Land | Area |
+```text
+apartment
+villa
+shop
+office
+space
+labor_camp
+warehouse
+land
+```
 
-Apartment units may use classifications such as:
+`unit_number` and `area` are scalar Property attributes. They do not refer
+to separate child records.
+
+Apartment/property numbers may use classifications such as:
 
 - Studio
 - 1 BHK
@@ -161,7 +165,8 @@ Apartment units may use classifications such as:
 - 3 BHK
 - 4 BHK
 
-Design the model so new property types and rentable component types can be added without large schema rewrites.
+Add new property types only through the authoritative backend PropertyType
+enum and the matching frontend type definition.
 
 See [Property & Leasing Model](docs/domain/property-and-leasing.md).
 
@@ -171,14 +176,15 @@ See [Property & Leasing Model](docs/domain/property-and-leasing.md).
 
 ### Owner agreement
 
-Baithul Madeena takes a property, or agreed rentable scope, from an owner through an owner agreement.
+Baithul Madeena takes one or more Property records from an owner through an
+owner agreement.
 
 An owner agreement may define:
 
 - agreement number;
 - owner;
 - property/properties;
-- covered units/components;
+- covered properties;
 - agreement start and end dates;
 - payment terms;
 - number of payments/installments;
@@ -190,13 +196,13 @@ An owner agreement may define:
 
 ### Tenant agreement
 
-Baithul Madeena leases an available property or rentable component to a tenant.
+Baithul Madeena leases an available Property to a tenant.
 
 A tenant agreement may define:
 
 - agreement number;
 - tenant;
-- leased property/component;
+- leased Property records;
 - start and end dates;
 - payment terms;
 - number of payments/installments;
@@ -248,11 +254,11 @@ Never silently delete posted financial records. Prefer reversal, void, cancellat
 
 ## Maintenance
 
-A work order may be created for properties or their rentable components.
+A work order is created against a Property.
 
 Each work order can contain:
 
-- property/component;
+- property;
 - request details;
 - status;
 - assigned employee/vendor;
@@ -418,14 +424,13 @@ Agents must preserve these invariants:
 
 1. A branch user cannot access unauthorized branch data.
 2. A tenant agreement cannot lease an unavailable asset for overlapping dates unless the business explicitly supports overlap.
-3. A rentable component belongs to exactly one property.
-4. Owner agreement coverage must match the owner/property relationship.
-5. Payment schedules must reconcile with agreement totals subject to approved rounding rules.
-6. Posted receipts must have immutable/auditable numbering.
-7. Inventory cannot change without a stock movement.
-8. Work-order consumption cannot silently create inventory.
-9. Scrapped stock must be recorded as a write-off movement.
-10. Dashboard totals must use the same source-of-truth filters as listing/report APIs.
+3. Owner agreement coverage must match the owner/property relationship.
+4. Payment schedules must reconcile with agreement totals subject to approved rounding rules.
+5. Posted receipts must have immutable/auditable numbering.
+6. Inventory cannot change without a stock movement.
+7. Work-order consumption cannot silently create inventory.
+8. Scrapped stock must be recorded as a write-off movement.
+9. Dashboard totals must use the same source-of-truth filters as listing/report APIs.
 
 ---
 
@@ -450,7 +455,6 @@ PurchaseOrder
 PurchaseOrderItem
 Invoice
 InvoiceLine
-RentableComponent
 ```
 
 Avoid vague names such as:

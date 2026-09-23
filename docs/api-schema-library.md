@@ -404,6 +404,9 @@ All routes require authentication, an active account, and `X-Branch-Id`.
 
 Property create request:
 
+`property_type` accepts exactly: `apartment`, `villa`, `shop`, `office`,
+`space`, `labor_camp`, `warehouse`, or `land`.
+
 ```json
 {
   "owner_customer_id": 10,

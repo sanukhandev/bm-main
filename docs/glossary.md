@@ -13,19 +13,17 @@ A person or organization represented in the ERP. A customer may act as an owner,
 A customer who owns property managed or leased by Baithul Madeena.
 
 ## Tenant
-A customer who leases property or a rentable component from Baithul Madeena.
+A customer who leases a Property from Baithul Madeena.
 
 ## Property
-A real-estate asset such as an apartment building, villa, shop, office, space, labor camp, warehouse, or land.
-
-## Rentable Component
-A separately rentable part of a property, such as a unit, room, area, or bed.
+A Property is an independently managed and leasable real-estate record, such
+as an apartment, villa, shop, office, space, labor camp, warehouse, or land.
 
 ## Owner Agreement
-Agreement through which Baithul Madeena takes a property or asset scope from an owner.
+Agreement through which Baithul Madeena takes one or more Properties from an owner.
 
 ## Tenant Agreement
-Agreement through which Baithul Madeena leases a property or rentable component to a tenant.
+Agreement through which Baithul Madeena leases one or more Properties to a tenant.
 
 ## Installment
 A scheduled payment amount under an agreement.
@@ -37,7 +35,7 @@ Receipt generated for inward revenue/payment received.
 Receipt generated for outward revenue/payment made.
 
 ## Work Order
-Maintenance job raised for a property or rentable component.
+Maintenance job raised for a Property.
 
 ## Service Charge
 Service/labor charge associated with maintenance work.

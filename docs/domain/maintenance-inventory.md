@@ -2,10 +2,7 @@
 
 ## Work Orders
 
-A work order can be raised against:
-
-- a property; or
-- a rentable component such as a unit, room, area, or bed.
+A work order is raised against a Property.
 
 Suggested fields:
 
@@ -13,7 +10,6 @@ Suggested fields:
 work_order_no
 branch_id
 property_id
-rentable_component_id
 title
 description
 priority

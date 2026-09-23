@@ -123,7 +123,7 @@ Reviewers should ask:
 2. Can a user submit another branch's foreign key?
 3. Can this duplicate a financial posting?
 4. Can this make stock inconsistent?
-5. Can this double-book a rentable asset?
+5. Can this double-book a Property?
 6. Is the state transition legal?
 7. Are calculations server-authoritative?
 8. Are tests present for failure paths?
