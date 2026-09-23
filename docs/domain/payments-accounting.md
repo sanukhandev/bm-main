@@ -181,6 +181,22 @@ Actual format is a product decision.
 
 The critical requirement is uniqueness and non-reuse.
 
+The current operational ledger uses `account_transactions` as the authoritative
+posted money record. Agreement payments derive direction from context: tenant
+payments are inward and owner payments are outward. The transaction's document
+number is the receipt/voucher record; separate duplicate receipt tables are not
+created.
+
+Agreement payment posting locks the agreement/installments, re-reads the
+outstanding balance, allocates the complete payment atomically, and accepts an
+`Idempotency-Key`. Payment allocation totals must equal the posted amount and
+cannot exceed installment outstanding balances.
+
+Payment mode metadata is structured. Cash uses a server-generated default
+remark (`Cash Payment <sequence>`); cheque requires cheque number/date; bank
+transfer requires bank reference/transfer date. Irrelevant mode fields are
+cleared before persistence.
+
 ---
 
 ## Cancellation / Void
@@ -195,3 +211,8 @@ replacement_document_id nullable
 ```
 
 Never delete a posted receipt to "fix" a transaction.
+
+Voiding is an explicit `POST /api/v1/accounts/transactions/{id}/void` action
+requiring a reason. It preserves the original document number and source
+record, reverses installment allocations atomically, and excludes the voided
+entry from petty-cash balances. Posted and voided records are immutable.

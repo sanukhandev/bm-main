@@ -126,6 +126,26 @@ numbers use `BRANCH-QT-YEAR-000001`; invoice numbers use
 Payment lines remain pending until explicitly marked paid. Paid lines create a
 branch-scoped inward or outward AccountTransaction and receipt/voucher number.
 
+## Operational financial posting
+
+`account_transactions` is the source-of-truth record for posted receipts and
+vouchers. Tenant agreement payments always post `inward`; owner agreement
+payments always post `outward`. Posting endpoints accept an `Idempotency-Key`
+and return the original transaction on a retry.
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| GET | `/api/v1/accounts/inward` | List inward receipts |
+| GET | `/api/v1/accounts/outward` | List outward vouchers |
+| POST | `/api/v1/tenant-agreements/{agreement}/payments` | Post tenant inward payment |
+| POST | `/api/v1/owner-agreements/{agreement}/payments` | Post owner outward payment |
+| POST | `/api/v1/accounts/transactions/{transaction}/void` | Void a posted financial record |
+| POST | `/api/v1/accounts/petty-cash` | Post petty-cash cash-in/out |
+
+Void requires `reason`, preserves the original document number, and reverses
+agreement installment allocations atomically. Posted and voided records cannot
+be edited or deleted.
+
 ## Error model
 
 All `/api/*` errors use this shape:

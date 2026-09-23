@@ -55,6 +55,7 @@ GET    /api/v1/tenant-agreements
 POST   /api/v1/tenant-agreements
 POST   /api/v1/tenant-agreements/{id}/activate
 POST   /api/v1/payments
+POST   /api/v1/accounts/transactions/{id}/void
 GET    /api/v1/work-orders
 POST   /api/v1/work-orders
 POST   /api/v1/purchase-orders/{id}/receive

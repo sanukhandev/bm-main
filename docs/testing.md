@@ -83,6 +83,12 @@ history. The scheduled lifecycle processor must be safe to run repeatedly.
 - receipt generation;
 - void/reversal.
 
+Financial posting tests must also verify server-derived tenant/owner direction,
+mode-specific metadata, allocation reconciliation, overpayment rejection,
+transaction locking, immutable posted records, non-reusable document numbers,
+branch-scoped voiding, installment restoration after void, and petty-cash
+balance exclusion for voided entries.
+
 ### Inventory
 
 - purchase receipt increases stock;
