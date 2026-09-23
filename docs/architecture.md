@@ -217,6 +217,14 @@ Side effects such as notifications, PDF generation, analytics, or AI indexing sh
 
 ---
 
+## Operational dashboard read model
+
+The operational dashboard is served by `GET /api/v1/dashboard/operational`.
+Its counts and attention lists are calculated by the backend for the verified
+active branch. Operational access does not grant Accounts access: receivables,
+payables, overdue installment amounts, and pending cheque values are omitted
+unless the user has `accounts.view`.
+
 ## 8. Auditability
 
 Audit at least:

@@ -190,6 +190,14 @@ Avoid factories that silently attach every record to one default branch, as this
 
 ---
 
+## Operational dashboard
+
+Dashboard tests must verify branch-scoped summary counts, current-day
+occupancy, 30-day expiry filtering, open work orders, and financial attention
+permission masking. Future, expired, cancelled, and terminated tenant
+agreements must not be treated as current occupancy. Frontend tests should
+cover loading, error, empty, restricted-financial, and branch-refresh states.
+
 ## Regression Rule
 
 Any production bug involving:

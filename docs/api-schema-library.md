@@ -45,6 +45,20 @@ Rules:
 - Production CORS origins are explicit; wildcard origins are not allowed with credentials.
 - The frontend must never send passwords, session IDs, or CSRF tokens to logs or analytics.
 
+## Operational dashboard
+
+`GET /api/v1/dashboard/operational` returns a branch-scoped, backend-calculated
+operational read model. It includes summary counts for owners, tenants,
+properties, and active agreements; current-day property occupancy; agreements
+expiring within 30 days; open work orders; and a short expiring-agreement list.
+
+Financial attention values are included only when the authenticated user has
+`accounts.view`; otherwise `financial_attention` is `null`. Active agreement
+counts use `approved`, `commenced`, and `on_hold`. A property is occupied today
+when an `approved`, `commenced`, or `on_hold` tenant agreement covers today;
+future agreements do not count as occupied. All results use the verified branch
+context and are not calculated from frontend list data.
+
 ## Common headers
 
 ```http
