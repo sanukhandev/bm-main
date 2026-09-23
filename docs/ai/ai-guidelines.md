@@ -80,6 +80,13 @@ create_work_order_draft
 
 Avoid giving an AI layer unrestricted SQL access.
 
+Zaakiy uses server-side module skills. The request is classified against an
+allowlisted skill, and that skill performs the branch-scoped, permission-aware
+read. Gemini receives only the selected skill's compact verified result; it
+does not receive a dashboard dump, unrestricted query access, or record text
+that can act as instructions. Navigation is emitted separately from an
+allowlisted route map.
+
 ---
 
 ## High-Impact Actions

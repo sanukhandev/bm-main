@@ -83,6 +83,25 @@ Paginated reports return `data`, `links`, and `meta`; filtered totals are in
 the current page. Explicit all-branch reporting is deferred; Super Admin
 reports use the selected branch context.
 
+## Zaakiy assistant
+
+`POST /api/v1/ai/zaakiy/chat` is an authenticated, active-user, selected-branch
+endpoint. The request accepts `message` (1-4000 characters) and an optional
+maximum 20-item `history` array with `role` (`user` or `model`) and `text`.
+The response is a server-sent event stream containing `navigation`, `token`,
+`done`, or `error` events. `navigation` carries a safe `{label, url}` action
+for a relevant existing ERP page; it is never a client-supplied redirect.
+Gemini credentials remain server-side in Laravel environment
+configuration (`GEMINI_API_KEY`, `GEMINI_MODEL`, and `GEMINI_BASE_URL`).
+
+The backend resolves each message to one allowlisted server-side module skill.
+That skill performs the authorized active-branch read and returns a compact
+verified result. Gemini receives only that result, not an unrestricted
+dashboard dump or database access. Financial values are included only when the
+user has `accounts.view`. Navigation is emitted separately from an allowlisted
+route map. Zaakiy is read-only in this first slice and must not be used to
+mutate ERP records.
+
 ## Common headers
 
 ```http
