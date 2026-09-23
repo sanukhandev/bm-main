@@ -1,5 +1,18 @@
 # Testing Strategy
 
+## Reports
+
+Core report feature tests must cover owner and tenant agreement projections,
+expiry filtering, installment outstanding/payables, inward/outward financial
+transactions, daily cash grouping, and petty-cash balances. Verify filtered
+summary totals are independent of pagination, date ranges reject inverted
+values, voided financial records do not inflate balances, and Branch A never
+receives Branch B rows or aggregate values. Financial report endpoints require
+`accounts.view`; agreement reports may return contract data while masking
+financial columns for users without that permission. Angular report tests
+cover typed filter requests, loading/empty/error states, summaries, pagination,
+and report navigation.
+
 ## Testing Pyramid
 
 Use:

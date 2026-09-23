@@ -59,6 +59,30 @@ when an `approved`, `commenced`, or `on_hold` tenant agreement covers today;
 future agreements do not count as occupied. All results use the verified branch
 context and are not calculated from frontend list data.
 
+## Core reports
+
+The branch-scoped reports API is read-only and uses the verified active branch
+context. Row reports accept `date_from`, `date_to`, `status`, `search`, and
+report-specific customer/property/payment filters. Date ranges must be valid
+(`date_from <= date_to`), and pagination is limited to 100 rows per page.
+
+| Endpoint | Permission | Purpose |
+| --- | --- | --- |
+| `GET /api/v1/reports/owner-agreements` | normal agreement access | Owner agreement projection and totals; financial columns are masked without `accounts.view` |
+| `GET /api/v1/reports/tenant-agreements` | normal agreement access | Tenant agreement projection and totals; financial columns are masked without `accounts.view` |
+| `GET /api/v1/reports/agreement-expiry` | normal agreement access | Owner and tenant expiry rows with signed `days_remaining` |
+| `GET /api/v1/reports/tenant-outstanding` | `accounts.view` | Installment outstanding and overdue totals |
+| `GET /api/v1/reports/owner-payables` | `accounts.view` | Owner installment payable and overdue totals |
+| `GET /api/v1/reports/inward-receipts` | `accounts.view` | Inward account transactions and payment metadata |
+| `GET /api/v1/reports/outward-vouchers` | `accounts.view` | Outward account transactions and payment metadata |
+| `GET /api/v1/reports/daily-cash-movement` | `accounts.view` | Posted cash-only daily in/out/net movement |
+| `GET /api/v1/reports/petty-cash` | `accounts.view` | Paginated petty-cash daybook and authoritative balance summary |
+
+Paginated reports return `data`, `links`, and `meta`; filtered totals are in
+`meta.summary` and are calculated across the complete filtered query, not just
+the current page. Explicit all-branch reporting is deferred; Super Admin
+reports use the selected branch context.
+
 ## Common headers
 
 ```http
