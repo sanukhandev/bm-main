@@ -39,9 +39,11 @@ If multi-owner ownership is required in the future, evolve to an ownership pivot
 
 Availability is date-sensitive.
 
-A Property is not available for a tenant agreement when there is an
-overlapping active/reserved tenant agreement for that Property, unless
-overlap is explicitly permitted.
+A Property is available only when the requested dates are covered by a valid
+Owner Agreement and no blocking Tenant Agreement overlaps the same Property.
+The current blocking Tenant Agreement statuses are `pending_approval`,
+`approved`, `commenced`, and `on_hold`. Draft, cancelled, terminated, and
+expired agreements do not reserve the Property.
 
 Recommended overlap rule for inclusive dates:
 
@@ -53,13 +55,26 @@ new_end >= existing_start
 
 If checkout/end dates are treated as exclusive, use the corresponding exclusive rule consistently.
 
+The backend rechecks this rule inside the Tenant Agreement create/update
+transaction. It locks selected Property rows in ascending ID order before
+checking overlaps, so an earlier availability response cannot authorize a
+conflicting save. `GET /api/v1/properties/available` exposes the same
+branch-scoped query for the frontend; it is advisory only.
+
 ---
 
 ## Agreement Coverage
 
 Owner agreement coverage is stored against one or more Property records.
 
-Tenant agreements must not lease an asset outside Baithul Madeena's valid owner-agreement coverage for the relevant period, if owner-agreement coverage is the source of leasing authority.
+Tenant agreements must not lease an asset outside Baithul Madeena's valid
+owner-agreement coverage for the relevant period. Tenant dates must satisfy:
+
+```text
+tenant_start_date >= owner_start_date
+AND
+tenant_end_date <= owner_end_date
+```
 
 ---
 

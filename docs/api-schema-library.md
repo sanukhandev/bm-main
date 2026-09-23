@@ -537,6 +537,18 @@ PATCH  /api/v1/tenant-agreements/{tenant_agreement}
 DELETE /api/v1/tenant-agreements/{tenant_agreement}
 ```
 
+Available tenant properties:
+
+```text
+GET /api/v1/properties/available
+```
+
+Required query parameters are `start_date` and `end_date` (`YYYY-MM-DD`).
+Optional parameters are `source_owner_agreement_id`, `property_type`,
+`owner_customer_id`, `search`, `exclude_tenant_agreement_id`, and `per_page`.
+The endpoint is branch-scoped and applies Owner Agreement date coverage and
+the same blocking Tenant Agreement overlap rule used during final saves.
+
 Create request:
 
 ```json

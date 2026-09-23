@@ -59,6 +59,12 @@ Test read and write operations.
 - cross-branch asset;
 - agreement expiry/termination.
 
+Availability tests must cover inclusive boundary conflicts, contained ranges,
+non-blocking draft/terminal statuses, multi-property atomicity, owner
+agreement date coverage, update self-exclusion, and the branch-scoped
+`/api/v1/properties/available` query. Final create/update tests must exercise
+the backend recheck under the Property-row locking transaction.
+
 ### Payments
 
 - cash;
