@@ -163,6 +163,9 @@ numbers use `BRANCH-QT-YEAR-000001`; invoice numbers use
 
 Payment lines remain pending until explicitly marked paid. Paid lines create a
 branch-scoped inward or outward AccountTransaction and receipt/voucher number.
+Paid payment-line projections also include a nullable `receipt` object with the
+posted transaction `id`, `document_no`, and `direction`; the UI links this to
+the branch-scoped inward/outward Accounts list.
 
 ## Operational financial posting
 
