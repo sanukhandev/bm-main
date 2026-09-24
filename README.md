@@ -11,6 +11,7 @@ The backend and frontend are maintained as Git submodules.
 
 ## Change Log
 
+- **2026-09-24**: Fixed the Super Admin Users API crash caused by uncast login timestamps.
 - **2026-09-24**: Fixed deployment triggers for backend and frontend submodule pointer updates.
 - **2026-09-24**: Hardened SSH deployment connections with keepalive, connection retries, and bounded job timeouts.
 - **2026-09-24**: Updated the application header and navigation layout.
