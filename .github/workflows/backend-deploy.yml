@@ -50,10 +50,8 @@ jobs:
             'phpunit.xml' 'package.json' 'package-lock.json' 'vite.config.js' \
             'README.md' 'AGENTS.md'
 
-      - name: Configure SSH
-        uses: webfactory/ssh-agent@v0.9.1
-        with:
-          ssh-private-key: ${{ secrets.CPANEL_SSH_KEY }}
+      - name: Install SSH password helper
+        run: sudo apt-get update && sudo apt-get install -y sshpass
 
       - name: Configure SSH host verification
         env:
@@ -68,22 +66,25 @@ jobs:
           SSH_HOST: ${{ secrets.CPANEL_SSH_HOST }}
           SSH_PORT: ${{ vars.CPANEL_SSH_PORT }}
           SSH_USER: ${{ secrets.CPANEL_SSH_USERNAME }}
+          SSHPASS: ${{ secrets.CPANEL_SSH_PASSWORD }}
           DEPLOY_PATH: ${{ vars.CPANEL_BACKEND_PATH }}
-        run: ssh -p "${SSH_PORT:-22}" "$SSH_USER@$SSH_HOST" "mkdir -p '$DEPLOY_PATH/.deploy'"
+        run: sshpass -e ssh -p "${SSH_PORT:-22}" "$SSH_USER@$SSH_HOST" "mkdir -p '$DEPLOY_PATH/.deploy'"
 
       - name: Upload backend archive
         env:
           SSH_HOST: ${{ secrets.CPANEL_SSH_HOST }}
           SSH_PORT: ${{ vars.CPANEL_SSH_PORT }}
           SSH_USER: ${{ secrets.CPANEL_SSH_USERNAME }}
+          SSHPASS: ${{ secrets.CPANEL_SSH_PASSWORD }}
           DEPLOY_PATH: ${{ vars.CPANEL_BACKEND_PATH }}
-        run: scp -P "${SSH_PORT:-22}" ../backend-release.zip "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/.deploy/backend-${GITHUB_SHA}.zip"
+        run: sshpass -e scp -P "${SSH_PORT:-22}" ../backend-release.zip "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/.deploy/backend-${GITHUB_SHA}.zip"
 
       - name: Extract backend archive on server
         env:
           SSH_HOST: ${{ secrets.CPANEL_SSH_HOST }}
           SSH_PORT: ${{ vars.CPANEL_SSH_PORT }}
           SSH_USER: ${{ secrets.CPANEL_SSH_USERNAME }}
+          SSHPASS: ${{ secrets.CPANEL_SSH_PASSWORD }}
           DEPLOY_PATH: ${{ vars.CPANEL_BACKEND_PATH }}
         run: |
-          ssh -p "${SSH_PORT:-22}" "$SSH_USER@$SSH_HOST" "set -eu; target='$DEPLOY_PATH'; archive=\"\$target/.deploy/backend-${GITHUB_SHA}.zip\"; temp=\"\$target/.deploy/backend-${GITHUB_SHA}\"; rm -rf \"\$temp\"; mkdir -p \"\$temp\"; unzip -oq \"\$archive\" -d \"\$temp\"; cp -a \"\$temp/.\" \"\$target/\"; rm -rf \"\$temp\" \"\$archive\""
+          sshpass -e ssh -p "${SSH_PORT:-22}" "$SSH_USER@$SSH_HOST" "set -eu; target='$DEPLOY_PATH'; archive=\"\$target/.deploy/backend-${GITHUB_SHA}.zip\"; temp=\"\$target/.deploy/backend-${GITHUB_SHA}\"; rm -rf \"\$temp\"; mkdir -p \"\$temp\"; unzip -oq \"\$archive\" -d \"\$temp\"; cp -a \"\$temp/.\" \"\$target/\"; rm -rf \"\$temp\" \"\$archive\""

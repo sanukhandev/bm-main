@@ -30,13 +30,13 @@ Repository Secrets:
 ```text
 CPANEL_SSH_HOST
 CPANEL_SSH_USERNAME
-CPANEL_SSH_KEY
+CPANEL_SSH_PASSWORD
 CPANEL_SSH_KNOWN_HOSTS
 ```
 
 Enable SSH access in Hostinger/cPanel and use the SSH host, SSH username, and
-private key for that account. The workflows use the native `ssh` and `scp`
-clients to upload ZIP archives and run `unzip` on the server.
+SSH password for that account. The workflows use `sshpass` with the native
+`ssh` and `scp` clients to upload ZIP archives and run `unzip` on the server.
 
 Optional repository variable:
 
