@@ -4,8 +4,8 @@ on:
   push:
     branches: [dev-release]
     paths:
-      - 'backend/**'
-      - '.github/workflows/backend-deploy.yml'
+      - "backend/**"
+      - ".github/workflows/backend-deploy.yml"
   workflow_dispatch:
 
 permissions:
@@ -30,7 +30,7 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: "8.2"
           extensions: mbstring, dom, sqlite, pdo_sqlite
           tools: composer:v2
           coverage: none
@@ -41,30 +41,49 @@ jobs:
       - name: Check formatting
         run: vendor/bin/pint --test
 
-      - name: Deploy Laravel application files
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+      - name: Package Laravel application
+        run: |
+          zip -rq ../backend-release.zip . \
+            -x '.git/*' '.env' 'vendor/*' 'node_modules/*' 'tests/*' \
+            'storage/logs/*' 'storage/framework/cache/*' \
+            'storage/framework/sessions/*' 'storage/framework/views/*' \
+            'phpunit.xml' 'package.json' 'package-lock.json' 'vite.config.js' \
+            'README.md' 'AGENTS.md'
+
+      - name: Configure SSH
+        uses: webfactory/ssh-agent@v0.9.1
         with:
-          server: ${{ secrets.CPANEL_FTP_SERVER }}
-          username: ${{ secrets.CPANEL_FTP_USERNAME }}
-          password: ${{ secrets.CPANEL_FTP_PASSWORD }}
-          protocol: ftps
-          port: 21
-          local-dir: backend/
-          server-dir: ${{ vars.CPANEL_BACKEND_PATH }}/
-          dangerous-clean-slate: false
-          exclude: |
-            **/.git*/**
-            **/.env*
-            **/vendor/**
-            **/node_modules/**
-            **/tests/**
-            **/storage/logs/**
-            **/storage/framework/cache/**
-            **/storage/framework/sessions/**
-            **/storage/framework/views/**
-            **/phpunit.xml
-            **/package.json
-            **/package-lock.json
-            **/vite.config.js
-            **/README.md
-            **/AGENTS.md
+          ssh-private-key: ${{ secrets.CPANEL_SSH_KEY }}
+
+      - name: Configure SSH host verification
+        env:
+          SSH_KNOWN_HOSTS: ${{ secrets.CPANEL_SSH_KNOWN_HOSTS }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Prepare backend release directory
+        env:
+          SSH_HOST: ${{ secrets.CPANEL_SSH_HOST }}
+          SSH_PORT: ${{ vars.CPANEL_SSH_PORT }}
+          SSH_USER: ${{ secrets.CPANEL_SSH_USERNAME }}
+          DEPLOY_PATH: ${{ vars.CPANEL_BACKEND_PATH }}
+        run: ssh -p "${SSH_PORT:-22}" "$SSH_USER@$SSH_HOST" "mkdir -p '$DEPLOY_PATH/.deploy'"
+
+      - name: Upload backend archive
+        env:
+          SSH_HOST: ${{ secrets.CPANEL_SSH_HOST }}
+          SSH_PORT: ${{ vars.CPANEL_SSH_PORT }}
+          SSH_USER: ${{ secrets.CPANEL_SSH_USERNAME }}
+          DEPLOY_PATH: ${{ vars.CPANEL_BACKEND_PATH }}
+        run: scp -P "${SSH_PORT:-22}" ../backend-release.zip "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/.deploy/backend-${GITHUB_SHA}.zip"
+
+      - name: Extract backend archive on server
+        env:
+          SSH_HOST: ${{ secrets.CPANEL_SSH_HOST }}
+          SSH_PORT: ${{ vars.CPANEL_SSH_PORT }}
+          SSH_USER: ${{ secrets.CPANEL_SSH_USERNAME }}
+          DEPLOY_PATH: ${{ vars.CPANEL_BACKEND_PATH }}
+        run: |
+          ssh -p "${SSH_PORT:-22}" "$SSH_USER@$SSH_HOST" "set -eu; target='$DEPLOY_PATH'; archive=\"\$target/.deploy/backend-${GITHUB_SHA}.zip\"; temp=\"\$target/.deploy/backend-${GITHUB_SHA}\"; rm -rf \"\$temp\"; mkdir -p \"\$temp\"; unzip -oq \"\$archive\" -d \"\$temp\"; cp -a \"\$temp/.\" \"\$target/\"; rm -rf \"\$temp\" \"\$archive\""

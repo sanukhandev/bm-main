@@ -28,14 +28,34 @@ to the HTTPS API origin/path, for example `https://api.example.com`.
 Repository Secrets:
 
 ```text
-CPANEL_FTP_SERVER
-CPANEL_FTP_USERNAME
-CPANEL_FTP_PASSWORD
+CPANEL_SSH_HOST
+CPANEL_SSH_USERNAME
+CPANEL_SSH_KEY
+CPANEL_SSH_KNOWN_HOSTS
 ```
 
-Get these from cPanel → **Files → FTP Accounts**. Use the FTP hostname shown
-by Hostinger, the FTP account username, and its password. FTPS is used by the
-workflows.
+Enable SSH access in Hostinger/cPanel and use the SSH host, SSH username, and
+private key for that account. The workflows use the native `ssh` and `scp`
+clients to upload ZIP archives and run `unzip` on the server.
+
+Optional repository variable:
+
+```text
+CPANEL_SSH_PORT=22
+```
+
+Use the SSH port shown by Hostinger; shared hosting commonly provides a
+non-default port.
+
+Create `CPANEL_SSH_KNOWN_HOSTS` locally after verifying the host fingerprint
+with Hostinger:
+
+```bash
+ssh-keyscan -p <SSH_PORT> <SSH_HOST>
+```
+
+Store the complete output as the GitHub secret. Do not disable host-key
+verification in the workflows.
 
 ## Server-only Laravel environment
 
@@ -69,9 +89,10 @@ Generate `APP_KEY` once with `php artisan key:generate --show` in a secure
 local/server shell, then place the value in the server `.env`. Generate the
 Gemini key in Google AI Studio and restrict it to the required API usage.
 
-The backend workflow deliberately excludes `vendor/` and `.env`; upload the
-already-built compatible `vendor/` directory to the Laravel root and keep it
-on the server. The workflow does not delete the server environment or vendor.
+The backend workflow packages Laravel into a ZIP, excludes `vendor/` and
+`.env`, uploads the archive over SSH, and extracts it on the server. It copies
+the extracted files over the existing application, so the already-uploaded
+compatible `vendor/` directory and server `.env` remain in place.
 
 ## First deployment checklist
 

@@ -4,8 +4,8 @@ on:
   push:
     branches: [dev-release]
     paths:
-      - 'frontend/**'
-      - '.github/workflows/frontend-deploy.yml'
+      - "frontend/**"
+      - ".github/workflows/frontend-deploy.yml"
   workflow_dispatch:
 
 permissions:
@@ -30,7 +30,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: "22"
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
@@ -39,19 +39,46 @@ jobs:
 
       - name: Build production frontend
         env:
-          BACKEND_URL: ''
+          BACKEND_URL: ${{ vars.BACKEND_URL }}
         run: npm run build -- --configuration production
 
-      - name: Deploy Angular production files
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+      - name: Package Angular production files
+        run: (cd dist/bm-frontend && zip -rq ../../frontend-release.zip .)
+
+      - name: Configure SSH
+        uses: webfactory/ssh-agent@v0.9.1
         with:
-          server: ${{ secrets.CPANEL_FTP_SERVER }}
-          username: ${{ secrets.CPANEL_FTP_USERNAME }}
-          password: ${{ secrets.CPANEL_FTP_PASSWORD }}
-          protocol: ftps
-          port: 21
-          local-dir: frontend/dist/bm-frontend/
-          server-dir: ${{ vars.CPANEL_FRONTEND_PATH }}/
-          dangerous-clean-slate: false
-          exclude: |
-            **/.git*/**
+          ssh-private-key: ${{ secrets.CPANEL_SSH_KEY }}
+
+      - name: Configure SSH host verification
+        env:
+          SSH_KNOWN_HOSTS: ${{ secrets.CPANEL_SSH_KNOWN_HOSTS }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Prepare frontend release directory
+        env:
+          SSH_HOST: ${{ secrets.CPANEL_SSH_HOST }}
+          SSH_PORT: ${{ vars.CPANEL_SSH_PORT }}
+          SSH_USER: ${{ secrets.CPANEL_SSH_USERNAME }}
+          DEPLOY_PATH: ${{ vars.CPANEL_FRONTEND_PATH }}
+        run: ssh -p "${SSH_PORT:-22}" "$SSH_USER@$SSH_HOST" "mkdir -p '$DEPLOY_PATH/.deploy'"
+
+      - name: Upload frontend archive
+        env:
+          SSH_HOST: ${{ secrets.CPANEL_SSH_HOST }}
+          SSH_PORT: ${{ vars.CPANEL_SSH_PORT }}
+          SSH_USER: ${{ secrets.CPANEL_SSH_USERNAME }}
+          DEPLOY_PATH: ${{ vars.CPANEL_FRONTEND_PATH }}
+        run: scp -P "${SSH_PORT:-22}" frontend-release.zip "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/.deploy/frontend-${GITHUB_SHA}.zip"
+
+      - name: Extract frontend archive on server
+        env:
+          SSH_HOST: ${{ secrets.CPANEL_SSH_HOST }}
+          SSH_PORT: ${{ vars.CPANEL_SSH_PORT }}
+          SSH_USER: ${{ secrets.CPANEL_SSH_USERNAME }}
+          DEPLOY_PATH: ${{ vars.CPANEL_FRONTEND_PATH }}
+        run: |
+          ssh -p "${SSH_PORT:-22}" "$SSH_USER@$SSH_HOST" "set -eu; target='$DEPLOY_PATH'; archive=\"\$target/.deploy/frontend-${GITHUB_SHA}.zip\"; temp=\"\$target/.deploy/frontend-${GITHUB_SHA}\"; rm -rf \"\$temp\"; mkdir -p \"\$temp\"; unzip -oq \"\$archive\" -d \"\$temp\"; cp -a \"\$temp/.\" \"\$target/\"; rm -rf \"\$temp\" \"\$archive\""
