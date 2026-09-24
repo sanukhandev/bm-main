@@ -358,7 +358,7 @@ Response:
 }
 ```
 
-### Administration read endpoints
+### Administration user management
 
 `GET /api/v1/admin/users` and `GET /api/v1/admin/roles` require an active
 authenticated super admin. Users are returned as a paginated collection with
@@ -366,6 +366,21 @@ their active branch memberships and global/branch role keys. Roles are returned
 as a `data` collection with `id`, `name`, `label`, `description`, and
 `permissions` fields. These endpoints do not accept a branch context because
 they are global administration views.
+
+The same Super Admin-only administration group provides:
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `POST` | `/api/v1/admin/users` | Create an active user with password, branch IDs, and role keys |
+| `PATCH` | `/api/v1/admin/users/{id}` | Update identity, optional password, branch assignments, and roles |
+| `PATCH` | `/api/v1/admin/users/{id}/status` | Set `active`, `inactive`, or `suspended` status |
+
+Create/update requests require at least one active branch and one valid role.
+The global `super_admin` role cannot be combined with branch roles. User access
+changes are transactional and audited. A Super Admin cannot suspend itself or
+remove/deactivate the last active Super Admin. These endpoints never accept a
+client branch context because user administration is explicitly global and
+restricted to Super Admins.
 
 ### `GET /api/v1/customers`
 
