@@ -11,6 +11,7 @@ The backend and frontend are maintained as Git submodules.
 
 ## Change Log
 
+- **2026-09-24**: Scoped CI/CD triggers to exact `backend` and `frontend` submodule pointer updates; unrelated parent commits no longer deploy either application.
 - **2026-09-24**: Added Super Admin user management APIs and UI for creating users, assigning active branches and roles, editing access, and suspending/activating accounts with transactional audit coverage.
 - **2026-09-24**: Fixed the Super Admin Users API crash caused by uncast login timestamps.
 - **2026-09-24**: Fixed deployment triggers for backend and frontend submodule pointer updates.
