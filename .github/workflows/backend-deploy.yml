@@ -4,6 +4,7 @@ on:
   push:
     branches: [dev-release]
     paths:
+      - "backend"
       - "backend/**"
       - "README.md"
       - ".github/workflows/backend-deploy.yml"

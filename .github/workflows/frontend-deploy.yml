@@ -4,6 +4,7 @@ on:
   push:
     branches: [dev-release]
     paths:
+      - "frontend"
       - "frontend/**"
       - "README.md"
       - ".github/workflows/frontend-deploy.yml"
