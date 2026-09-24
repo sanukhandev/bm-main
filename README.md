@@ -11,6 +11,7 @@ The backend and frontend are maintained as Git submodules.
 
 ## Change Log
 
+- **2026-09-24**: Fixed deployment triggers for backend and frontend submodule pointer updates.
 - **2026-09-24**: Hardened SSH deployment connections with keepalive, connection retries, and bounded job timeouts.
 - **2026-09-24**: Updated the application header and navigation layout.
 - **2026-09-24**:
@@ -23,4 +24,3 @@ The backend and frontend are maintained as Git submodules.
 - **2026-09-24**:
   - **Datatables & UI Interactivity Audit**: Audited and upgraded all datatables across Accounts (Inward/Outward Receipts & Petty Cash), Billing (Quotations & Invoices), Maintenance (Work Orders, Vendors, & Inventory), and Administration (Branches, Users, & Audit Trail).
   - **Filters & Pagination Standardization**: Added missing search inputs, status dropdowns (draft, posted, voided, active, inactive, archived, open, in_progress, completed), priority filters, clear filters buttons, and standardized `<bm-pagination>` controls with seamless transitions and interactive row hover states.
-
