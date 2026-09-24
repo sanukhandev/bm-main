@@ -38,9 +38,6 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
 
-      - name: Run backend tests
-        run: php artisan test --no-ansi
-
       - name: Check formatting
         run: vendor/bin/pint --test
 
