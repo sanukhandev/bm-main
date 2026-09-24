@@ -7,9 +7,23 @@ https://erp.dw-digitalplatforms.in/
 ```
 
 Laravel is deployed to the configured backend path and Angular production
-files are deployed into Laravel's `public` directory. This lets Apache route
-`/api/*` and `/sanctum/*` to Laravel while all other client-side paths fall
-back to Angular's `index.html`.
+files are deployed into Laravel's `public` directory. The subdomain document
+root must be the Laravel `public` directory, not the parent application
+directory:
+
+```text
+/home/CPANEL_USER/domains/dw-digitalplatforms.in/public_html/erp/public
+```
+
+This makes the public URL:
+
+```text
+https://erp.dw-digitalplatforms.in/
+```
+
+Do not use `/public` in the browser URL. Apache then routes `/api/*` and
+`/sanctum/*` to Laravel while all other client-side paths fall back to
+Angular's `index.html`.
 
 ## GitHub configuration
 
@@ -96,16 +110,26 @@ compatible `vendor/` directory and server `.env` remain in place.
 
 ## First deployment checklist
 
-1. Create the subdomain and confirm its document root.
+1. Create the subdomain and set its document root to
+   `CPANEL_BACKEND_PATH/public`.
 2. Create the MySQL database/user in cPanel.
-3. Create the FTP account and add the three GitHub secrets.
+3. Enable SSH access and add the SSH host, username, password, and known-hosts
+   GitHub secrets.
 4. Upload Laravel `vendor/` to `CPANEL_BACKEND_PATH/vendor`.
 5. Create the server `.env` with production values.
-6. Run the backend workflow once, then verify `/api/v1/auth/me` responds with
+6. If Laravel previously ran from the wrong directory, clear its cached config
+   from the backend application directory:
+
+   ```bash
+   php artisan optimize:clear
+   chmod -R 775 storage bootstrap/cache
+   ```
+
+   Then run the backend workflow once and verify `/api/v1/auth/me` responds with
    the normal unauthenticated API response.
 7. Run the frontend workflow and open the subdomain.
 8. Confirm login, API requests, Angular deep links, PDF downloads, storage,
    and Zaakiy SSE behavior.
 
-The workflows deploy only from `main` or manual dispatch. They do not enable
-an implicit all-branch ERP scope and they do not push Git changes.
+The workflows deploy from `dev-release` or by manual dispatch. They do not
+enable an implicit all-branch ERP scope and they do not push Git changes.
