@@ -5,6 +5,7 @@ on:
     branches: [dev-release]
     paths:
       - "backend/**"
+      - "README.md"
       - ".github/workflows/backend-deploy.yml"
   workflow_dispatch:
 
