@@ -20,3 +20,7 @@ The backend and frontend are maintained as Git submodules.
   - **Responsive Layout & Window Overflow Fix**: Resolved `w-screen` scrollbar overflow issue, refined responsive navigation scaling across standard screen breakpoints (`640px` to `1536px`), and elevated dropdown z-index stacking above dashboard hero cards.
   - **Zaakiy Chat UI & Searchable Comboboxes**: Modernized Zaakiy AI interface to match ERP design system, and upgraded owner/tenant agreement selection to searchable comboboxes.
 - **2026-09-24**: Added the Zaakiy ERP FAQ skill and published the business user guide.
+- **2026-09-24**:
+  - **Datatables & UI Interactivity Audit**: Audited and upgraded all datatables across Accounts (Inward/Outward Receipts & Petty Cash), Billing (Quotations & Invoices), Maintenance (Work Orders, Vendors, & Inventory), and Administration (Branches, Users, & Audit Trail).
+  - **Filters & Pagination Standardization**: Added missing search inputs, status dropdowns (draft, posted, voided, active, inactive, archived, open, in_progress, completed), priority filters, clear filters buttons, and standardized `<bm-pagination>` controls with seamless transitions and interactive row hover states.
+
