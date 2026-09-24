@@ -102,6 +102,12 @@ user has `accounts.view`. Navigation is emitted separately from an allowlisted
 route map. Zaakiy is read-only in this first slice and must not be used to
 mutate ERP records.
 
+The server may resolve one question to multiple skills through an internal
+`IntentFrame` and `ReadOrchestrator`. The result is normalized into bounded
+evidence before Gemini is called. Entity references are resolved only inside
+the verified active branch; ambiguous or missing references are reported and
+never guessed. The public SSE contract remains unchanged.
+
 ## Common headers
 
 ```http
@@ -765,3 +771,19 @@ Business records derive `branch_id` from that context; client-supplied branch
 ownership, lifecycle status, financial direction, totals, posted metadata, and
 document numbers are ignored or rejected. Cross-branch resources resolve as
 not found according to the existing API error convention.
+
+## Intelligent Report
+
+`GET /api/v1/reports/intelligent` requires `accounts.view` and an active
+authorized branch context. It accepts `period` values `this_month`,
+`last_month`, `last_3_months`, `last_6_months`, `last_12_months`, `this_year`,
+or `custom` with `date_from` and `date_to`. `scope=branch` is the default;
+`scope=overall` is allowed only for Super Admin and is an explicit
+all-authorized-branches request.
+
+`GET /api/v1/reports/intelligent/pdf` uses the same authorization, scope,
+period, and backend report dataset as the JSON endpoint. The report exposes
+cash position, ERP-captured operational profitability, trends, collections,
+occupancy, and deterministic findings. Operational Profit/Loss is a
+management metric based on records captured in Baithul Madeena, not a
+statutory/general-ledger Profit & Loss statement.

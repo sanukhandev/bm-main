@@ -87,6 +87,18 @@ does not receive a dashboard dump, unrestricted query access, or record text
 that can act as instructions. Navigation is emitted separately from an
 allowlisted route map.
 
+The current read pipeline is:
+
+```text
+question -> IntentFrame -> ReadOrchestrator -> module skills
+-> bounded application queries -> SkillEvidence -> Gemini context -> SSE
+```
+
+One question may invoke multiple skills. Intent resolution can use prior user
+messages only to understand a follow-up; authorization and branch context are
+re-resolved for every request. Client conversation history is not sent to
+Gemini as unrestricted context.
+
 ---
 
 ## High-Impact Actions
@@ -163,3 +175,13 @@ Do not make:
 - work-order completion
 
 dependent on an AI provider unless the business explicitly chooses that dependency.
+
+## Intelligent Report integration
+
+Zaakiy may analyze the Intelligent Report through a dedicated read-only skill.
+Laravel calculates and authorizes the report metrics, trend data, and leakage
+findings before any evidence is sent to Gemini. Gemini may explain verified
+evidence and suggest management review actions, but it must not calculate
+authoritative totals, assign leakage exposure/severity, access another branch,
+or mutate ERP records. If Zaakiy is unavailable, the verified report remains
+usable without AI analysis.
