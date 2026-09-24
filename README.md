@@ -11,6 +11,7 @@ The backend and frontend are maintained as Git submodules.
 
 ## Change Log
 
+- **2026-09-24**: Hardened SSH deployment connections with keepalive, connection retries, and bounded job timeouts.
 - **2026-09-24**: Updated the application header and navigation layout.
 - **2026-09-24**:
   - **macOS Spotlight Command Palette (`Ctrl + K`)**: Redesigned top navbar search into a centered floating Spotlight command palette with keyboard navigation (`↑↓`, `↵`, `ESC`), category badges, route shortcuts, mobile drawer integration, and dynamic record lookup fallbacks.

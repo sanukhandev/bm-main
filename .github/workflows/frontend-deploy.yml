@@ -19,6 +19,13 @@ concurrency:
 jobs:
   test-build-and-deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SSH_OPTIONS: >-
+        -o ConnectTimeout=30
+        -o ConnectionAttempts=3
+        -o ServerAliveInterval=15
+        -o ServerAliveCountMax=4
     defaults:
       run:
         working-directory: frontend
@@ -64,7 +71,7 @@ jobs:
           SSH_USER: ${{ secrets.CPANEL_SSH_USERNAME }}
           SSHPASS: ${{ secrets.CPANEL_SSH_PASSWORD }}
           DEPLOY_PATH: ${{ vars.CPANEL_FRONTEND_PATH }}
-        run: sshpass -e ssh -p "${SSH_PORT:-22}" "$SSH_USER@$SSH_HOST" "mkdir -p '$DEPLOY_PATH/.deploy'"
+        run: sshpass -e ssh $SSH_OPTIONS -p "${SSH_PORT:-22}" "$SSH_USER@$SSH_HOST" "mkdir -p '$DEPLOY_PATH/.deploy'"
 
       - name: Upload frontend archive
         env:
@@ -73,7 +80,7 @@ jobs:
           SSH_USER: ${{ secrets.CPANEL_SSH_USERNAME }}
           SSHPASS: ${{ secrets.CPANEL_SSH_PASSWORD }}
           DEPLOY_PATH: ${{ vars.CPANEL_FRONTEND_PATH }}
-        run: sshpass -e scp -P "${SSH_PORT:-22}" frontend-release.zip "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/.deploy/frontend-${GITHUB_SHA}.zip"
+        run: sshpass -e scp $SSH_OPTIONS -P "${SSH_PORT:-22}" frontend-release.zip "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/.deploy/frontend-${GITHUB_SHA}.zip"
 
       - name: Extract frontend archive on server
         env:
@@ -83,4 +90,4 @@ jobs:
           SSHPASS: ${{ secrets.CPANEL_SSH_PASSWORD }}
           DEPLOY_PATH: ${{ vars.CPANEL_FRONTEND_PATH }}
         run: |
-          sshpass -e ssh -p "${SSH_PORT:-22}" "$SSH_USER@$SSH_HOST" "set -eu; target='$DEPLOY_PATH'; archive=\"\$target/.deploy/frontend-${GITHUB_SHA}.zip\"; temp=\"\$target/.deploy/frontend-${GITHUB_SHA}\"; rm -rf \"\$temp\"; mkdir -p \"\$temp\"; unzip -oq \"\$archive\" -d \"\$temp\"; cp -a \"\$temp/.\" \"\$target/\"; rm -rf \"\$temp\" \"\$archive\""
+          sshpass -e ssh $SSH_OPTIONS -p "${SSH_PORT:-22}" "$SSH_USER@$SSH_HOST" "set -eu; target='$DEPLOY_PATH'; archive=\"\$target/.deploy/frontend-${GITHUB_SHA}.zip\"; temp=\"\$target/.deploy/frontend-${GITHUB_SHA}\"; rm -rf \"\$temp\"; mkdir -p \"\$temp\"; unzip -oq \"\$archive\" -d \"\$temp\"; cp -a \"\$temp/.\" \"\$target/\"; rm -rf \"\$temp\" \"\$archive\""
