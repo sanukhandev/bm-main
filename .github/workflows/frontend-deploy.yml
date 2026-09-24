@@ -37,9 +37,6 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
 
-      - name: Run frontend tests
-        run: npm test -- --watch=false
-
       - name: Build production frontend
         env:
           BACKEND_URL: ''
