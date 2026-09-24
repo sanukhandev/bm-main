@@ -43,7 +43,7 @@ jobs:
         run: npm run build -- --configuration production
 
       - name: Package Angular production files
-        run: (cd dist/bm-frontend && zip -rq ../../frontend-release.zip .)
+        run: (cd dist/bm-frontend/browser && zip -rq ../../frontend-release.zip .)
 
       - name: Install SSH password helper
         run: sudo apt-get update && sudo apt-get install -y sshpass
