@@ -12,6 +12,7 @@ The backend and frontend are maintained as Git submodules.
 ## Change Log
 
 - **2026-09-24**:
+  - **macOS Spotlight Command Palette (`Ctrl + K`)**: Redesigned top navbar search into a centered floating Spotlight command palette with keyboard navigation (`↑↓`, `↵`, `ESC`), category badges, route shortcuts, mobile drawer integration, and dynamic record lookup fallbacks.
   - **About Application Page (`/app/about`)**: Implemented system overview page with Fujairah & Ajman UAE branch context, credits for engineering firm ([Desertwhales Technology](https://dwtech.vercel.app/)), lead architect ([Sanu Khan](https://www.sanukhan.dev/)), and AI platform ([ZaakiyV3RSE](https://www.zaakiy.io/)).
   - **Help Navigation Group & Dropdown**: Added dedicated Help menu in top navbar containing links for About Application, FAQ & User Guide, Terms of Use, Privacy Policy, and Legal Suite.
   - **Responsive Layout & Window Overflow Fix**: Resolved `w-screen` scrollbar overflow issue, refined responsive navigation scaling across standard screen breakpoints (`640px` to `1536px`), and elevated dropdown z-index stacking above dashboard hero cards.
