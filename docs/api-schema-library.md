@@ -429,11 +429,34 @@ Request:
 }
 ```
 
+### `POST /api/v1/customers/identity-extract`
+
+This is a create-form helper available to authenticated users who can create
+customers in the verified active branch. It is not part of the Zaakiy chat API
+and it never creates or updates a customer.
+
+The request is multipart form data:
+
+| Field | Type | Rules |
+| --- | --- | --- |
+| `role` | string | `owner` or `tenant` |
+| `document` | file | JPG, JPEG, PNG, or PDF; maximum 10 MB |
+
+Laravel sends the document to the configured Gemini extraction boundary in
+memory and returns only an allowlisted draft field set. The document is not
+stored by the ERP. The response may contain `display_name`, `legal_name`,
+`identity_no`, country/address fields, confidence values, and warnings. Phone
+numbers are intentionally never extracted. The Angular form requires the user
+to enter/confirm the phone number and click the ordinary customer Submit action
+manually. When an Emirates ID is extracted, the response also includes a
+short-lived `verification_token`; the create request may submit that token to
+mark the resulting customer as verified.
+
 `branch_id`, `status`, audit actors, and calculated values are server-controlled
 and must not be submitted as authorization instructions. `roles` may contain
 `owner`, `tenant`, or both and creates branch-scoped customer role assignments.
 
-Success: `201` with a `Customer` resource.
+Success: `200` with the extraction result.
 
 ### `GET /api/v1/customers/{customer}`
 
@@ -456,6 +479,7 @@ Customer response fields:
     "email": "customer@example.com",
     "tax_registration_no": null,
     "identity_no": null,
+    "identity_verified": false,
     "company_registration_no": null,
     "address_line_1": null,
     "address_line_2": null,
@@ -802,3 +826,21 @@ cash position, ERP-captured operational profitability, trends, collections,
 occupancy, and deterministic findings. Operational Profit/Loss is a
 management metric based on records captured in Baithul Madeena, not a
 statutory/general-ledger Profit & Loss statement.
+
+## Customer profile
+
+`GET /api/v1/customers/{customer}/profile` returns the selected customer and a
+branch-scoped profile read model containing role-relevant properties, owner and
+tenant agreements, and the latest bounded transaction history. The endpoint
+requires the normal customer-view authorization and active branch context.
+
+Transaction history is returned only when the authenticated user has
+`accounts.view`; otherwise `profile.financial_restricted` is `true` and the
+transaction list is empty. The response is read-only, limited to the latest 100
+transactions, and cross-branch customer IDs are not disclosed.
+
+Customer resources also expose `identity_verified`. An Emirates ID is marked
+verified only when the customer is created using a short-lived server-issued
+verification token from the identity extraction flow. Verified identity values
+are shown as read-only in the edit form and backend updates that change the
+verified ID are rejected.

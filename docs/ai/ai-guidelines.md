@@ -185,3 +185,18 @@ evidence and suggest management review actions, but it must not calculate
 authoritative totals, assign leakage exposure/severity, access another branch,
 or mutate ERP records. If Zaakiy is unavailable, the verified report remains
 usable without AI analysis.
+
+## Identity document form assistance
+
+Owner and tenant create forms may offer a separate identity-document extraction
+helper for an Emirates ID image or PDF. This helper is not available through
+Zaakiy chat and is not a write action. The backend sends the uploaded document
+to the configured Gemini boundary in memory, accepts only an allowlisted JSON
+field set, and discards the upload after extraction. It must never extract or
+invent a phone number. Extracted values are draft form values only; the user
+must review them, enter and confirm the phone number, and submit through the
+normal customer endpoint. No customer is created by the extraction request.
+
+Identity documents contain sensitive personal data. Production deployments
+must present the applicable privacy notice/consent and configure the external
+AI provider according to the organization's data-processing requirements.
