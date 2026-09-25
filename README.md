@@ -11,6 +11,7 @@ The backend and frontend are maintained as Git submodules.
 
 ## Change Log
 
+- **2026-09-25**: Consolidated maintenance vendors into branch-scoped customer records with a `vendor` role, migrated vendor references, and added customer-based vendor creation and directory access.
 - **2026-09-25**: Added customer-profile create actions with deterministic owner/tenant prefilled comboboxes, owner property/agreement loading, tenant property search, payment-line receipt/voucher navigation, and server-enforced inward/outward direction.
 - **2026-09-25**: Updated backend SSH deployment to apply pending Laravel migrations automatically after release extraction.
 - **2026-09-25**: Added branch-scoped Owner and Tenant customer profiles with linked properties, agreements, and permission-aware transaction history.
