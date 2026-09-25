@@ -11,6 +11,7 @@ The backend and frontend are maintained as Git submodules.
 
 ## Change Log
 
+- **2026-09-25**: Added customer-profile create actions with deterministic owner/tenant prefilled comboboxes, owner property/agreement loading, tenant property search, payment-line receipt/voucher navigation, and server-enforced inward/outward direction.
 - **2026-09-25**: Updated backend SSH deployment to apply pending Laravel migrations automatically after release extraction.
 - **2026-09-25**: Added branch-scoped Owner and Tenant customer profiles with linked properties, agreements, and permission-aware transaction history.
 - **2026-09-25**: Added server-backed Emirates ID verification badges and protected verified ID values from modification.
