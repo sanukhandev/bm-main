@@ -831,13 +831,22 @@ statutory/general-ledger Profit & Loss statement.
 
 `GET /api/v1/customers/{customer}/profile` returns the selected customer and a
 branch-scoped profile read model containing role-relevant properties, owner and
-tenant agreements, and the latest bounded transaction history. The endpoint
+tenant agreements, their compact payment lines, and the latest bounded transaction history. The endpoint
 requires the normal customer-view authorization and active branch context.
 
 Transaction history is returned only when the authenticated user has
 `accounts.view`; otherwise `profile.financial_restricted` is `true` and the
 transaction list is empty. The response is read-only, limited to the latest 100
 transactions, and cross-branch customer IDs are not disclosed.
+
+When `accounts.view` is present, each agreement also returns `payment_lines`.
+Scheduled lines contain their balance and any posted receipt/voucher reference;
+additional lines contain their manually entered particulars and category. The
+profile links these lines to the existing agreement payment workflow. Owner
+agreement lines are always posted as outward vouchers and tenant agreement
+lines are always posted as inward receipts; the client cannot choose the
+direction. Without `accounts.view`, payment lines are returned as an empty
+collection and no financial line data is loaded.
 
 Customer resources also expose `identity_verified`. An Emirates ID is marked
 verified only when the customer is created using a short-lived server-issued
