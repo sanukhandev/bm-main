@@ -11,6 +11,7 @@ The backend and frontend are maintained as Git submodules.
 
 ## Change Log
 
+- **2026-09-26**: Started backend consolidation on `cleanup/backend-consolidation`: restored the Composer PHPUnit command, removed proven-dead Zaakiy and agreement-transition wrappers, centralized work-order status mutation, customer-vendor mechanics, occupancy reporting, and decimal amount conversion while preserving legacy API routes.
 - **2026-09-26**: Standardized backend, branch records, and frontend date handling to the `Asia/Dubai` timezone.
 - **2026-09-25**: Consolidated maintenance vendors into branch-scoped customer records with a `vendor` role, migrated vendor references, and added customer-based vendor creation and directory access.
 - **2026-09-25**: Added customer-profile create actions with deterministic owner/tenant prefilled comboboxes, owner property/agreement loading, tenant property search, payment-line receipt/voucher navigation, and server-enforced inward/outward direction.
