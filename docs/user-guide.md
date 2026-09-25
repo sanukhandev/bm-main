@@ -365,7 +365,13 @@ metadata. Invoice and quotation records remain branch-scoped.
 
 ## 13. Maintenance and Work Orders
 
-The Maintenance area manages vendors, inventory and work orders.
+The Maintenance area manages vendors, inventory and work orders. Vendors are
+managed as customer records with the **Vendor** business role, so the same
+customer master and branch controls apply.
+
+To create or update a vendor, open **Operations → Customers → Vendors**. The
+Maintenance vendor directory and work-order vendor selector use these same
+records.
 
 ### Create a Work Order
 
@@ -650,4 +656,3 @@ current business-user scope or may be future enhancements:
 The application should always be treated as the source for the records and
 calculations it captures. Consult the responsible finance or management team
 for statutory accounting decisions.
-

@@ -167,7 +167,7 @@ src/app/
 │   ├── payments/
 │   ├── maintenance/
 │   ├── inventory/
-│   ├── vendors/
+│   ├── customers/        # includes owner, tenant and vendor roles
 │   ├── purchase-orders/
 │   └── invoices/
 └── app.routes.ts

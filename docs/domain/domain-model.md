@@ -298,13 +298,18 @@ scrap
 
 ## Vendor
 
-Suggested fields:
+Vendors are customer records with the branch-scoped `vendor` business role.
+The maintenance and billing vendor endpoints remain compatibility routes, but
+their identity data is read from `customers`; there is no separate vendor
+master table.
+
+Customer fields used for vendors:
 
 ```text
 id
 branch_id
-vendor_code
-name
+customer_code
+display_name
 phone
 email
 tax_registration_no
@@ -312,7 +317,10 @@ address
 status
 ```
 
-Decide explicitly whether vendors are branch-local or globally shared.
+Vendor records are branch-local and must be selected through the active branch
+context. Work orders, quotations, and invoices retain their existing
+`vendor_id` API field while resolving that ID to a customer with the `vendor`
+role.
 
 ---
 

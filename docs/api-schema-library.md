@@ -395,6 +395,7 @@ Query parameters:
 | `search` | string | Searches supported customer identity fields |
 | `status` | string | `active`, `inactive`, or `archived` |
 | `customer_type` | string | `individual` or `organization` |
+| `role` | string | Optional filter: `owner`, `tenant`, or `vendor` |
 | `sort` | string | Whitelisted fields; `-` prefix means descending |
 
 Customers are always filtered to the verified branch. The response is a
@@ -429,6 +430,11 @@ Request:
 }
 ```
 
+Vendors use the same customer create/update contract with `roles: ["vendor"]`.
+Their customer code is generated with the `VEN` prefix. The legacy
+`/api/v1/maintenance/vendors` directory/create/update routes remain available
+for compatibility and now read/write the same customer records.
+
 ### `POST /api/v1/customers/identity-extract`
 
 This is a create-form helper available to authenticated users who can create
@@ -439,7 +445,7 @@ The request is multipart form data:
 
 | Field | Type | Rules |
 | --- | --- | --- |
-| `role` | string | `owner` or `tenant` |
+| `role` | string | `owner`, `tenant`, or `vendor` |
 | `document` | file | JPG, JPEG, PNG, or PDF; maximum 10 MB |
 
 Laravel sends the document to the configured Gemini extraction boundary in
@@ -454,7 +460,8 @@ mark the resulting customer as verified.
 
 `branch_id`, `status`, audit actors, and calculated values are server-controlled
 and must not be submitted as authorization instructions. `roles` may contain
-`owner`, `tenant`, or both and creates branch-scoped customer role assignments.
+`owner`, `tenant`, `vendor`, or combinations and creates branch-scoped customer
+role assignments.
 
 Success: `200` with the extraction result.
 
@@ -523,6 +530,7 @@ POST   /api/v1/properties
 GET    /api/v1/properties/{property}
 PATCH  /api/v1/properties/{property}
 DELETE /api/v1/properties/{property}
+GET    /api/v1/properties/{property}/profile
 ```
 
 All routes require authentication, an active account, and `X-Branch-Id`.
@@ -590,6 +598,17 @@ Property list filters are `search`, `status`, `property_type`,
 `DELETE /api/v1/properties/{property}` is a safe soft delete. It sets
 `status=archived`, populates `deleted_at`, and returns `204`; it never removes
 the property row or its historical relationships.
+
+`GET /api/v1/properties/{property}/profile` returns the branch-scoped property
+profile with linked owner/tenant agreements, their payment lines and posted
+receipt references, linked work orders and work-order payments. Financial
+fields are omitted when the actor lacks `accounts.view`. The response also
+includes server-derived `actions.can_create_owner_agreement` and
+`actions.can_create_tenant_agreement`; tenant agreement creation is only
+allowed when the property has a current owner agreement and no current tenant
+agreement. `actions.default_owner_agreement_id` identifies the current owner
+agreement to preload when starting a tenant agreement. Current owner statuses are `approved`, `commenced`, and `on_hold`;
+current tenant statuses additionally include `pending_approval`.
 
 ### Owner Agreement resources
 
