@@ -11,6 +11,10 @@ The backend and frontend are maintained as Git submodules.
 
 ## Change Log
 
+- **2026-09-25**: Updated backend SSH deployment to apply pending Laravel migrations automatically after release extraction.
+- **2026-09-25**: Added branch-scoped Owner and Tenant customer profiles with linked properties, agreements, and permission-aware transaction history.
+- **2026-09-25**: Added server-backed Emirates ID verification badges and protected verified ID values from modification.
+- **2026-09-25**: Added opt-in Emirates ID image/PDF extraction on Owner and Tenant creation forms; extraction only populates draft fields, never submits or stores documents, and requires manual phone confirmation.
 - **2026-09-24**: Scoped CI/CD triggers to exact `backend` and `frontend` submodule pointer updates; unrelated parent commits no longer deploy either application.
 - **2026-09-24**: Added Super Admin user management APIs and UI for creating users, assigning active branches and roles, editing access, and suspending/activating accounts with transactional audit coverage.
 - **2026-09-24**: Fixed the Super Admin Users API crash caused by uncast login timestamps.
