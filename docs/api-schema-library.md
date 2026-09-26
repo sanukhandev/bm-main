@@ -382,6 +382,23 @@ remove/deactivate the last active Super Admin. These endpoints never accept a
 client branch context because user administration is explicitly global and
 restricted to Super Admins.
 
+### Administration branch management
+
+These endpoints require an authenticated active Super Admin and do not accept
+`X-Branch-Id` because branch administration is global:
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| GET | `/api/v1/admin/branches` | List all branches |
+| POST | `/api/v1/admin/branches` | Create a branch |
+| PATCH | `/api/v1/admin/branches/{id}` | Edit a branch |
+
+Create requests require `name`, `state_or_emirate`, `timezone`, and
+`currency_code`. The server generates `<EMIRATE_CODE>-NNN` codes such as
+`DXB-001`; the sequence is unique within each emirate and codes are globally
+unique. Client-supplied codes are ignored. Edit requests cannot change codes.
+Mutations are audited.
+
 ### `GET /api/v1/customers`
 
 Authentication, active account, and `X-Branch-Id` are required.
