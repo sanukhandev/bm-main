@@ -11,6 +11,7 @@ The backend and frontend are maintained as Git submodules.
 
 ## Change Log
 
+- **2026-09-28**: Refactored complete frontend routes to Bento grid layout UI across Customers, Properties, Accounts Reports, Audit Logs, Branches, Users, and Roles lists; deduplicated mega menus and mobile navigation drawer; expanded Ctrl+K Spotlight search with all creation actions (+Owner, +Tenant, +Vendor, +Property, +Owner Agreement, +Tenant Lease, +Inward Receipt, +Outward Voucher, +Work Order, +Quotation, +Invoice) and comprehensive page search items.
 - **2026-09-26**: Added Super Admin branch management with create/edit APIs and UI, audited mutations, and automatic emirate-scoped branch codes such as `DXB-001` and `DXB-002`.
 - **2026-09-26**: Standardized backend, branch records, and frontend date handling to the `Asia/Dubai` timezone.
 - **2026-09-25**: Consolidated maintenance vendors into branch-scoped customer records with a `vendor` role, migrated vendor references, and added customer-based vendor creation and directory access.
