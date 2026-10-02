@@ -651,6 +651,9 @@ Create request:
   "payment_count": 12,
   "payment_frequency": "monthly",
   "payment_mode": "bank_transfer",
+  "installments": [
+    { "installment_no": 1, "category": "rent", "particulars": "January 2026 rent" }
+  ],
   "terms_text": null,
   "notes": null
 }
@@ -676,6 +679,12 @@ records require dedicated lifecycle actions, not ordinary CRUD updates.
 
 Agreement list filters are `search`, `status`, `party_customer_id`, `page`,
 `per_page`, and whitelisted `sort` values.
+
+Agreement creation requires one `installments` entry per `payment_count`. Each
+entry requires `installment_no`, `category` (`rent`, `security`, or
+`commission`), and `particulars`. Installment responses include a generated
+`transaction_reference` formatted as
+`CustomerCode/AgreementCode/outward|inward/category/particulars`.
 
 `DELETE /api/v1/owner-agreements/{owner_agreement}` is a safe termination, not
 a physical delete. Optional request body:
