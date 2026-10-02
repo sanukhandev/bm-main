@@ -850,6 +850,18 @@ branch, and returns a paginated `data`/`meta` envelope. Supported filters are
 safe actor/branch details plus compact `before`, `after`, and `metadata`
 objects. There are no public audit create, update, or delete endpoints.
 
+### POST /api/v1/activity-logs
+
+Authenticated active users may submit bounded frontend activity telemetry with
+action values opened, viewed, printed, downloaded, updated, created, approved,
+commenced, drafted, or deleted, together with a page. The server derives the
+actor and branch from authenticated context and queues the append operation on
+the activity queue; it returns 202 without waiting for the audit write.
+Sensitive metadata is redacted before persistence.
+
+Super Admins may add all_branches=1 to GET /api/v1/audit-logs to review all
+authorized branches. Non-Super Admin requests for that scope return 403.
+
 All branch-scoped API requests require an authenticated active branch context.
 Business records derive `branch_id` from that context; client-supplied branch
 ownership, lifecycle status, financial direction, totals, posted metadata, and
