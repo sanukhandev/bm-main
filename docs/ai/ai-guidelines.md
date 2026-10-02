@@ -91,8 +91,15 @@ The current read pipeline is:
 
 ```text
 question -> IntentFrame -> ReadOrchestrator -> module skills
--> bounded application queries -> SkillEvidence -> Gemini context -> SSE
+-> bounded application queries -> ZaakiySkillResult -> Gemini context -> SSE
 ```
+
+`ZaakiySkillResult` is the internal verified-result contract. It carries
+structured metrics, records, breakdowns, comparisons, warnings, source
+references, approved navigation targets, follow-ups, resolved time range, and
+safe execution metadata. The result is created after the skill's existing
+branch and permission checks; it is not an authorization layer. Gemini may
+explain the result, but it is never the source of authoritative ERP values.
 
 One question may invoke multiple skills. Intent resolution can use prior user
 messages only to understand a follow-up; authorization and branch context are

@@ -94,13 +94,15 @@ for a relevant existing ERP page; it is never a client-supplied redirect.
 Gemini credentials remain server-side in Laravel environment
 configuration (`GEMINI_API_KEY`, `GEMINI_MODEL`, and `GEMINI_BASE_URL`).
 
-The backend resolves each message to one allowlisted server-side module skill.
-That skill performs the authorized active-branch read and returns a compact
-verified result. Gemini receives only that result, not an unrestricted
-dashboard dump or database access. Financial values are included only when the
-user has `accounts.view`. Navigation is emitted separately from an allowlisted
-route map. Zaakiy is read-only in this first slice and must not be used to
-mutate ERP records.
+The backend resolves each message to one or more allowlisted server-side module
+skills. Those skills perform the authorized active-branch reads and return
+standardized `ZaakiySkillResult` objects containing verified metrics, records,
+warnings, sources, navigation, time-range, and safe metadata fields. Gemini
+receives only a bounded filtered representation of those results, not an
+unrestricted dashboard dump or database access. Financial values are included
+only when the user has `accounts.view`. Navigation is emitted separately from
+an allowlisted route map. Zaakiy is read-only in this first slice and must not
+be used to mutate ERP records.
 
 The server may resolve one question to multiple skills through an internal
 `IntentFrame` and `ReadOrchestrator`. The result is normalized into bounded
