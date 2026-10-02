@@ -374,6 +374,11 @@ The same Super Admin-only administration group provides:
 | `POST` | `/api/v1/admin/users` | Create an active user with password, branch IDs, and role keys |
 | `PATCH` | `/api/v1/admin/users/{id}` | Update identity, optional password, branch assignments, and roles |
 | `PATCH` | `/api/v1/admin/users/{id}/status` | Set `active`, `inactive`, or `suspended` status |
+| `POST` | `/api/v1/admin/roles` | Create a branch-scoped role with permission keys |
+| `PATCH` | `/api/v1/admin/roles/{id}` | Edit a role label, description, and assigned permissions |
+| `GET` | `/api/v1/admin/permissions` | List permission keys and labels |
+| `POST` | `/api/v1/admin/permissions` | Create a permission key and label |
+| `PATCH` | `/api/v1/admin/permissions/{id}` | Edit a permission label; its key is immutable |
 
 Create/update requests require at least one active branch and one valid role.
 The global `super_admin` role cannot be combined with branch roles. User access
@@ -381,6 +386,9 @@ changes are transactional and audited. A Super Admin cannot suspend itself or
 remove/deactivate the last active Super Admin. These endpoints never accept a
 client branch context because user administration is explicitly global and
 restricted to Super Admins.
+
+Role keys and permission keys are immutable after creation. Custom roles are
+branch-scoped; system roles cannot be renamed or converted to another scope.
 
 ### Administration branch management
 
