@@ -88,8 +88,13 @@ reports use the selected branch context.
 `POST /api/v1/ai/zaakiy/chat` is an authenticated, active-user, selected-branch
 endpoint. The request accepts `message` (1-4000 characters) and an optional
 maximum 20-item `history` array with `role` (`user` or `model`) and `text`.
+It may also include a bounded `conversation_context` object returned by a
+previous `done` event. The backend treats it as an untrusted claim, re-resolves
+entities and branch scope, and discards branch-sensitive state after a branch
+change; it never grants permissions.
 The response is a server-sent event stream containing `navigation`, `token`,
-`done`, or `error` events. `navigation` carries a safe `{label, url}` action
+`done`, or `error` events. `done` may add the latest structured `context`;
+`navigation` carries a safe `{label, url}` action
 for a relevant existing ERP page; it is never a client-supplied redirect.
 Gemini credentials remain server-side in Laravel environment
 configuration (`GEMINI_API_KEY`, `GEMINI_MODEL`, and `GEMINI_BASE_URL`).
@@ -103,6 +108,19 @@ unrestricted dashboard dump or database access. Financial values are included
 only when the user has `accounts.view`. Navigation is emitted separately from
 an allowlisted route map. Zaakiy is read-only in this first slice and must not
 be used to mutate ERP records.
+
+Property 360 is a read-only property-level skill. It summarizes one authorized
+`properties` row with current agreement, occupancy, bounded maintenance, and
+permission-gated financial facts. It follows the simplified property model;
+there are no rentable components or child-unit records. Without
+`accounts.view`, financial fields and financial follow-up navigation are
+omitted while non-financial property information remains available.
+
+Tenant 360 is also read-only and operates on the unified customer record only
+when the customer has a tenant role in the active branch. It returns bounded
+tenant agreements, rented-property context, and permission-gated receivable,
+payment, and cheque summaries. Owner-only customers and cross-branch tenant
+references are not exposed.
 
 The server may resolve one question to multiple skills through an internal
 `IntentFrame` and `ReadOrchestrator`. The result is normalized into bounded
@@ -920,3 +938,132 @@ verified only when the customer is created using a short-lived server-issued
 verification token from the identity extraction flow. Verified identity values
 are shown as read-only in the edit form and backend updates that change the
 verified ID are rejected.
+Owner 360 responses use the unified customer record only when the customer has
+the owner role. They contain bounded owner properties, owner agreements,
+occupancy, and portfolio maintenance facts. Owner payable, installment,
+payment, and cheque fields require `accounts.view`; without it the response
+uses the standard financial restriction warning. All records remain active
+branch-scoped and read-only.
+
+Agreement 360 responses normalize one branch-authorized tenant or owner
+agreement while preserving `tenant_agreement` versus `owner_agreement`. They
+include bounded party/property references and lifecycle facts. Installment,
+payment, cheque, receipt, and financial totals require `accounts.view`; tenant
+payments remain inward and owner payments remain outward.
+
+Collections Health responses are branch-scoped and inward-only. They report
+tenant agreement receivables and posted inward tenant payments, never owner
+payables. `accounts.view` is required for all collection metrics, balances,
+payment records, and cheque information. Outstanding is the remaining unpaid
+tenant installment balance; overdue is the remaining balance whose due date is
+past. Aging uses fixed `current`, `1-30`, `31-60`, `61-90`, and `90+` buckets,
+and pending cheques are posted inward tenant cheques in `received` or
+`deposited` status. Results contain only bounded, authorized references and
+remain read-only.
+
+Agreement Risk responses contain deterministic attention codes rather than a
+risk score. Supported facts include EXPIRING_SOON,
+EXPIRED_ACTIVE_STATUS, OUTSTANDING_BALANCE, OVERDUE_BALANCE,
+BOUNCED_CHEQUE, combined expiry/financial conditions, and tenant
+OWNER_COVERAGE_BEFORE_TENANT_END where the source owner agreement is
+authoritatively linked. The default expiry horizon is 30 days. Financial
+signals require accounts.view; lifecycle and coverage signals remain
+available without it. Results are branch-scoped, bounded, read-only, and
+sorted by deterministic signal priority.
+
+Renewal Intelligence responses identify branch-authorized tenant and owner
+agreements in a resolved renewal window (60 days by default). They expose
+bounded agreement records and deterministic RENEWAL_* condition codes.
+Financial fields/signals require accounts.view; no renewal action or
+renewal workflow is exposed.
+
+Vacancy Analysis responses provide branch-scoped property occupancy,
+vacancy, duration, upcoming-vacancy, maintenance-count, owner, and property
+type facts. Eligible properties are active property rows; current occupancy
+comes from qualifying tenant agreements, while availability additionally
+requires current owner-agreement coverage. Results are bounded and
+ read-only.
+
+Maintenance Intelligence responses contain bounded `work_order` or property
+summary records, status/priority/aging breakdowns, and
+read-only maintenance navigation. `MAINTENANCE_OVERDUE_UNAVAILABLE` is
+returned because work orders currently have no authoritative due-date/SLA
+field; clients must not infer overdue state from the warning or from age.
+
+Comparison responses populate `comparisons` with the metric identifier, current
+and comparison values/ranges, absolute delta, percentage delta when valid,
+factual direction (`increase`, `decrease`, or `unchanged`), and unit. A zero
+comparison baseline produces a null percentage with structured metadata.
+The additive `trends` field contains bounded normalized trend objects with a
+stable metric ID, unit, granularity, range, points, and first-to-last factual
+summary. Historical snapshot points are only returned when reconstructable;
+the field does not change the SSE protocol and does not contain forecasts or
+subjective good/bad judgments.
+The additive `explanations` field contains bounded metric explanation objects
+with comparison values, additive drivers, residual delta, coverage, ranges,
+safe references, and an explicit explanation type. Current additive support is
+tenant-level posted inward collection decomposition. Unsupported or
+non-reconstructable explanations return structured warnings; no causal claims
+are generated from raw records.
+The additive `anomalies` field contains bounded records with explicit rule
+codes, severity, observed/baseline values, thresholds, periods, and safe
+references. Anomalies are evaluated by deterministic backend rules and do not
+change the SSE protocol.
+Unsupported historical snapshots return `HISTORICAL_SNAPSHOT_UNAVAILABLE`
+without fabricating a comparison value.
+## Zaakiy management briefing
+
+Management briefing results use `breakdowns.briefing_sections`, with bounded sections for `attention`, `collections`, `occupancy`, `agreements`, `renewals`, and `maintenance`. Each section includes `status`, `summary_metrics`, bounded `records`, and `warnings`. Financial sections require `accounts.view`. The top-level result remains compatible with the existing SSE contract and includes only verified backend facts.
+
+## Zaakiy capability metadata
+
+Capability metadata is available internally through `CapabilityRegistry` and
+is not an unauthenticated API. Each capability serializes its stable ID,
+skill/domain, intents, metric definitions, filters, time semantics,
+permissions, feature flags, result references, drill-down targets,
+limitations, composite dependencies, and `read_only` status. This metadata is
+descriptive and is not an authorization or query-execution contract.
+
+## Zaakiy query plans
+
+Query plans are internal backend DTOs containing `valid`, capability, domain,
+operation, metric, validated filters, entity reference, time ranges,
+granularity, bounded steps, warnings, and safe metadata. Supported operations
+are `read`, `compare`, `trend`, `explain`, `anomaly`, and `briefing`. Plans do
+not contain SQL or authorization state and are not exposed as a public API.
+
+Compound Zaakiy plans use the additive `operation=compound` form with up to
+three capability IDs and eight steps. A plan records its validated
+`merge_strategy` (`parallel_sections`, `intersection_by_reference`, or
+`enrich_by_reference`) and optional semantic `correlation` type. Compound
+results remain a single `ZaakiySkillResult` and store bounded child sections in
+`breakdowns.compound_sections`. Each section identifies its capability and
+domain and contains only child skill summary metrics, bounded records, warnings,
+navigation, and safe metadata. References propagated between sections are
+bounded and reauthorized by the target skill; the compound executor does not
+perform arbitrary joins or change the SSE event contract.
+
+### Zaakiy structured SSE events
+
+The Zaakiy chat stream retains `navigation`, `token`, `done`, and `error`. It
+may additionally emit the following typed presentation events before or
+between token events:
+
+```text
+summary, records, comparison, trend, explanation, anomalies,
+sections, warnings, suggestions
+```
+
+Each event contains only a bounded presentation projection of the verified
+skill result. Summary cards include a metric identifier, label, value, unit,
+and format hint. Comparison, trend, explanation, anomaly, and section payloads
+retain backend-provided values and semantics, including null percentages,
+unavailable trend points, partial-period metadata, deterministic severity, and
+section identity. The frontend must ignore unknown future event names and must
+not calculate authoritative values from streamed prose.
+
+Structured events do not change the SSE protocol's existing event names or
+authorization model. Financial fields are removed server-side when the active
+user lacks `accounts.view`; all events remain scoped to the verified active
+branch. Navigation and follow-up actions remain backend-provided and
+read-only.
