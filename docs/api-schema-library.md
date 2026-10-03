@@ -598,6 +598,13 @@ Property create request:
   "state_or_emirate": "Dubai",
   "country_code": "AE",
   "area": "85.5000",
+  "electricity_provider": "dewa",
+  "electricity_account_number": "1234567890",
+  "cooling_provider": "empower",
+  "cooling_account_number": "9876543210",
+  "gas_provider": "emirates_gas",
+  "gas_connection_type": "piped_gas",
+  "gas_connection_number": "GAS-001",
   "notes": null,
   "metadata_json": {}
 }
@@ -607,6 +614,12 @@ Property create request:
 branch. The server sets `branch_id` and `status=active`. Property ownership is
 immutable through ordinary PATCH once the property exists; use a dedicated
 future ownership workflow if the business permits ownership changes.
+
+Utility fields are optional. Provider values are controlled UAE options: electricity
+`dewa`, `addc`, `aadc`, `sewa`, `etihadwe`, or `other`; cooling `empower`,
+`emicool`, `tabreed`, `nakheel`, or `other`; and gas `emirates_gas`, `enoc`,
+`adnoc`, `lootah_gas`, `dubai_gas`, or `other`. Gas connection types are
+`piped_gas`, `lpg_cylinder`, `bulk_lpg`, or `other`.
 
 Property response:
 
@@ -628,6 +641,13 @@ Property response:
     "state_or_emirate": "Dubai",
     "country_code": "AE",
     "area": "85.5000",
+    "electricity_provider": "dewa",
+    "electricity_account_number": "1234567890",
+    "cooling_provider": "empower",
+    "cooling_account_number": "9876543210",
+    "gas_provider": "emirates_gas",
+    "gas_connection_type": "piped_gas",
+    "gas_connection_number": "GAS-001",
     "status": "active",
     "notes": null,
     "metadata_json": {},
