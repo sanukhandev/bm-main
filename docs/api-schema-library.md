@@ -475,6 +475,12 @@ Request:
 }
 ```
 
+`identity_no` is optional. For `individual` customers it stores an Emirates ID
+in `784-YYYY-XXXXXXX-X` format. For `organization` customers the same field
+stores the Trade Licence number; submitted spaces are removed and letters are
+uppercased, and the value must contain 5-50 letters, numbers, `/`, or `-`.
+`tax_registration_no` (TRN) remains optional and is stored as submitted.
+
 Vendors use the same customer create/update contract with `roles: ["vendor"]`.
 Their customer code is generated with the `VEN` prefix. The legacy
 `/api/v1/maintenance/vendors` directory/create/update routes remain available
