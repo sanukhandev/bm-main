@@ -554,9 +554,6 @@ Customer response fields:
       { "type": "contact", "number": "+971500000000" }
     ],
     "representative": null,
-    "phone_numbers": [
-      { "type": "contact", "number": "+971500000000" }
-    ],
     "email": "customer@example.com",
     "tax_registration_no": null,
     "identity_no": null,
