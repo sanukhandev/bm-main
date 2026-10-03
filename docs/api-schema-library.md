@@ -460,6 +460,11 @@ Request:
   "display_name": "Customer Name",
   "legal_name": null,
   "phone": "+971500000000",
+  "phone_numbers": [
+    { "type": "contact", "number": "+971500000000" },
+    { "type": "whatsapp", "number": "+971501111111" }
+  ],
+  "representative": null,
   "email": "customer@example.com",
   "tax_registration_no": null,
   "identity_no": null,
@@ -480,6 +485,17 @@ in `784-YYYY-XXXXXXX-X` format. For `organization` customers the same field
 stores the Trade Licence number; submitted spaces are removed and letters are
 uppercased, and the value must contain 5-50 letters, numbers, `/`, or `-`.
 `tax_registration_no` (TRN) remains optional and is stored as submitted.
+
+`phone_numbers` is optional and accepts typed entries with `type` values
+`contact`, `whatsapp`, `landline`, or `other`. The legacy `phone` field remains
+in the response and mirrors the first entry. Existing customers with only
+`phone` are returned with a synthesized `contact` entry; saving them writes
+the new JSON-backed format without breaking older consumers.
+
+For owner creation/update only, `representative` is optional. When supplied it
+requires `name` and an Emirates ID in `784-YYYY-XXXXXXX-X` format, and may
+include `relationship` and `phone`. Tenant and vendor contracts do not support
+this field.
 
 Vendors use the same customer create/update contract with `roles: ["vendor"]`.
 Their customer code is generated with the `VEN` prefix. The legacy
@@ -534,6 +550,13 @@ Customer response fields:
     "display_name": "Customer Name",
     "legal_name": null,
     "phone": "+971500000000",
+    "phone_numbers": [
+      { "type": "contact", "number": "+971500000000" }
+    ],
+    "representative": null,
+    "phone_numbers": [
+      { "type": "contact", "number": "+971500000000" }
+    ],
     "email": "customer@example.com",
     "tax_registration_no": null,
     "identity_no": null,
