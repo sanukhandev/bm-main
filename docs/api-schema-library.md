@@ -726,7 +726,7 @@ Create request:
   "payment_frequency": "monthly",
   "payment_mode": "bank_transfer",
   "installments": [
-    { "installment_no": 1, "category": "rent", "particulars": "January 2026 rent" }
+    { "installment_no": 1, "due_date": "2026-01-01", "amount": "1000.00", "category": "rent", "particulars": "January 2026 rent" }
   ],
   "terms_text": null,
   "notes": null
@@ -756,7 +756,11 @@ Agreement list filters are `search`, `status`, `party_customer_id`, `page`,
 
 Agreement creation requires one `installments` entry per `payment_count`. Each
 entry requires `installment_no`, `category` (`rent`, `security`, or
-`commission`), and `particulars`. Installment responses include a generated
+`commission`), and `particulars`. Optional `due_date` and `amount` values can
+override the generated payment date and amount; when supplied, every line must
+include both, dates must remain within the agreement period in chronological
+order, and amounts must reconcile exactly to `total_amount`. Installment
+responses include a generated
 `transaction_reference` formatted as
 `CustomerCode/AgreementCode/outward|inward/category/particulars`.
 
