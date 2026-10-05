@@ -107,6 +107,7 @@ space
 labor_camp
 warehouse
 land
+garage
 ```
 
 `unit_number` and `area` are scalar Property attributes. They do not refer

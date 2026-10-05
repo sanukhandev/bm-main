@@ -13,6 +13,7 @@ space
 labor_camp
 warehouse
 land
+garage
 ```
 
 Each row in `properties` is an independently managed and leasable
@@ -20,7 +21,7 @@ real-estate asset. `unit_number` may identify the physical property or
 property number, and `area` is a scalar Property attribute. Neither field
 creates a child entity.
 
-These eight values are the authoritative PropertyType values for the current
+These nine values are the authoritative PropertyType values for the current
 application contract.
 
 ---

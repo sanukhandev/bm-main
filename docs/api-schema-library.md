@@ -513,6 +513,7 @@ The request is multipart form data:
 | Field | Type | Rules |
 | --- | --- | --- |
 | `role` | string | `owner`, `tenant`, or `vendor` |
+| `customer_type` | string | optional: `individual` or `organization`; organization scans expect a UAE trade licence |
 | `document` | file | JPG, JPEG, PNG, or PDF; maximum 10 MB |
 
 Laravel sends the document to the configured Gemini extraction boundary in
@@ -531,6 +532,10 @@ and must not be submitted as authorization instructions. `roles` may contain
 role assignments.
 
 Success: `200` with the extraction result.
+
+Owner forms can separately scan an optional representative's Emirates ID; that
+scan populates the representative fields and does not replace the owner's
+identity. Tenant and vendor representative sections remain unavailable.
 
 ### `GET /api/v1/customers/{customer}`
 
@@ -609,7 +614,7 @@ All routes require authentication, an active account, and `X-Branch-Id`.
 Property create request:
 
 `property_type` accepts exactly: `apartment`, `villa`, `shop`, `office`,
-`space`, `labor_camp`, `warehouse`, or `land`.
+`space`, `labor_camp`, `warehouse`, `land`, or `garage`.
 
 ```json
 {
@@ -631,6 +636,12 @@ Property create request:
   "gas_provider": "emirates_gas",
   "gas_connection_type": "piped_gas",
   "gas_connection_number": "GAS-001",
+  "utility_details": [
+    { "type": "electricity", "provider": "dewa", "account_number": "1234567890" },
+    { "type": "cooling", "provider": "empower", "account_number": "9876543210" },
+    { "type": "gas", "provider": "emirates_gas", "connection_type": "piped_gas", "connection_number": "GAS-001" },
+    { "type": "furniture", "details": "Sofa, dining table, curtains" }
+  ],
   "notes": null,
   "metadata_json": {}
 }
@@ -648,6 +659,14 @@ Utility fields are optional. Provider values are controlled UAE options: electri
 `piped_gas`, `lpg_cylinder`, `bulk_lpg`, or `other`.
 
 Property response:
+
+`utility_details` is the repeatable utility array. Each row has a `type` of
+`electricity`, `cooling`, `gas`, or `furniture`. Electricity and cooling rows
+use `provider` and `account_number`; gas rows use `provider`,
+`connection_type`, and `connection_number`; furniture rows use `details`.
+The existing scalar utility fields remain in the response for compatibility and
+are mirrored from the array. Legacy records and scalar-only requests are
+represented as array rows automatically.
 
 ```json
 {
@@ -674,6 +693,12 @@ Property response:
     "gas_provider": "emirates_gas",
     "gas_connection_type": "piped_gas",
     "gas_connection_number": "GAS-001",
+    "utility_details": [
+      { "type": "electricity", "provider": "dewa", "account_number": "1234567890" },
+      { "type": "cooling", "provider": "empower", "account_number": "9876543210" },
+      { "type": "gas", "provider": "emirates_gas", "connection_type": "piped_gas", "connection_number": "GAS-001" },
+      { "type": "furniture", "details": "Sofa, dining table, curtains" }
+    ],
     "status": "active",
     "notes": null,
     "metadata_json": {},
@@ -716,6 +741,7 @@ Create request:
 ```json
 {
   "agreement_no": "OA-2026-001",
+  "file_no": "OWNER-FILE-2026-001",
   "owner_customer_id": 10,
   "property_ids": [20, 21],
   "start_date": "2026-01-01",
@@ -741,7 +767,7 @@ server-controlled.
 Owner Agreement response fields:
 
 ```text
-id, branch_id, agreement_no, owner_customer_id, owner, properties,
+id, branch_id, agreement_no, file_no, owner_customer_id, owner, properties,
 start_date, end_date, total_amount, currency_code, payment_count,
 payment_frequency, payment_mode, terms_text, notes, status, lock_version,
 terminated_at, termination_reason, created_at, updated_at
@@ -802,6 +828,7 @@ Create request:
 ```json
 {
   "agreement_no": "TA-2026-001",
+  "file_no": "TENANT-FILE-2026-001",
   "tenant_customer_id": 30,
   "properties": [
     {
@@ -826,7 +853,8 @@ property must be covered by the referenced Owner Agreement in the same branch;
 the source agreement/property relationship is enforced by database foreign
 keys. New agreements start as `draft`.
 
-Tenant Agreement response fields match Owner Agreements except that the party
+Tenant Agreement response fields match Owner Agreements, including optional
+`file_no`, except that the party
 fields are `tenant_customer_id` and `tenant`; each property retains its source
 owner-agreement relationship in the database.
 
