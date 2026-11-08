@@ -853,6 +853,41 @@ property must be covered by the referenced Owner Agreement in the same branch;
 the source agreement/property relationship is enforced by database foreign
 keys. New agreements start as `draft`.
 
+Tenant creation normally rejects dates outside the source Owner Agreement. An
+authorized exception may include:
+
+```json
+{
+  "coverage_override": true,
+  "coverage_override_reason": "Owner renewal is pending signature."
+}
+```
+
+`coverage_override_reason` is required when `coverage_override` is true. The
+caller must have the branch-scoped `agreements.override_coverage` permission.
+The override skips only the owner-date boundary; property coverage, branch
+authorization, and overlapping tenant occupancy checks still apply. Without
+the permission the API returns `403`; without a reason it returns
+`VALIDATION_ERROR`.
+
+When an override succeeds, the response includes a top-level warning:
+
+```json
+{
+  "warnings": [
+    {
+      "code": "OWNER_AGREEMENT_COVERAGE_OVERRIDDEN",
+      "message": "Tenant dates exceed the source owner agreement coverage by authorization."
+    }
+  ]
+}
+```
+
+The backend records `tenant_agreement.coverage_overridden` in the audit trail
+with the reason, actor, branch, tenant dates, source Owner Agreement IDs, and
+owner coverage dates. These fields apply to `POST` creation only; PATCH and
+lifecycle operations retain the normal coverage rule.
+
 Tenant Agreement response fields match Owner Agreements, including optional
 `file_no`, except that the party
 fields are `tenant_customer_id` and `tenant`; each property retains its source
