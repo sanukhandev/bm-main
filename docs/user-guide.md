@@ -182,6 +182,12 @@ The system rejects a Tenant Agreement when:
 - The selected Owner Agreement is invalid
 - Required payment schedule information is missing
 
+An authorized user with the `agreements.override_coverage` permission may
+create a tenant agreement beyond the selected Owner Agreement dates by
+confirming the warning and entering a reason. The exception is audit logged;
+property coverage, branch authorization, and overlapping tenant occupancy are
+still enforced.
+
 Date overlap protection covers exact, partial, contained and containing
 overlaps. A future agreement does not automatically mean the property is
 occupied today unless the business rule for that status says it reserves the
