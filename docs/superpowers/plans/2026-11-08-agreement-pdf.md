@@ -122,4 +122,3 @@
 - [ ] **Step 4: Commit any verification-only fixes**
 
   Use a focused commit only if the visual or static checks identify a real issue.
-
