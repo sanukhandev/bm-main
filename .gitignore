@@ -9,3 +9,8 @@ Thumbs.db
 *.swo
 node_modules/
 .worktrees/
+.superpowers/
+login
+docs/*
+*.md
+!README.md
