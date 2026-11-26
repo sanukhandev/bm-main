@@ -18,6 +18,21 @@ jobs:
   test-and-deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: local_only_test_password
+          MYSQL_DATABASE: bm_security_test
+          MYSQL_USER: security_test
+          MYSQL_PASSWORD: local_only_app_password
+        ports:
+          - 33306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -plocal_only_test_password"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
     env:
       SSH_OPTIONS: >-
         -o ConnectTimeout=30
@@ -37,7 +52,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.2"
-          extensions: mbstring, dom, sqlite, pdo_sqlite
+          extensions: mbstring, dom, sqlite, pdo_sqlite, pdo_mysql
           tools: composer:v2
           coverage: none
 
@@ -47,13 +62,25 @@ jobs:
       - name: Check formatting
         run: vendor/bin/pint --test
 
+      - name: Audit Composer dependencies
+        run: composer audit --no-interaction
+
+      - name: Run backend tests
+        run: php artisan test
+
+      - name: Run MySQL backend tests
+        run: vendor/bin/phpunit -c phpunit.mysql.xml --stop-on-failure --no-progress
+
+      - name: Install production dependencies
+        run: composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction --no-progress
+
       - name: Package Laravel application
         run: |
           zip -rq ../backend-release.zip . \
-            -x '.git/*' '.env' 'vendor/*' 'node_modules/*' 'tests/*' \
+            -x '.git/*' '.env*' '*.sql' 'node_modules/*' 'tests/*' \
             'storage/logs/*' 'storage/framework/cache/*' \
             'storage/framework/sessions/*' 'storage/framework/views/*' \
-            'phpunit.xml' 'package.json' 'package-lock.json' 'vite.config.js' \
+            'phpunit*.xml' 'package.json' 'package-lock.json' 'vite.config.js' \
             'README.md' 'AGENTS.md'
 
       - name: Install SSH password helper
