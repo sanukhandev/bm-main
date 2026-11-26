@@ -66,9 +66,13 @@ jobs:
         run: composer audit --no-interaction
 
       - name: Run backend tests
+        env:
+          APP_KEY: "base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
         run: php artisan test
 
       - name: Run MySQL backend tests
+        env:
+          APP_KEY: "base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
         run: vendor/bin/phpunit -c phpunit.mysql.xml --stop-on-failure --no-progress
 
       - name: Install production dependencies
